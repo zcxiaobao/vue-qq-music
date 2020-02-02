@@ -65,6 +65,21 @@ module.exports = {
             console.log(e)
           })
       })
+      // 获取 歌手的歌曲列表
+      app.get('/getSingerSongList', (req, res) => {
+        const url = 'https://u.y.qq.com/cgi-bin/musicu.fcg'
+        axios.get(url, {
+          headers: {
+            referer: 'https://y.qq.com/',
+            ...qqMusicHeaders
+          },
+          params: req.query
+        }).then(response => {
+          return res.json(response.data)
+        }).catch(e => {
+          console.log(e)
+        })
+      })
     }
   }
 }

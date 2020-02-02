@@ -42,11 +42,15 @@
     <div class="list-fixed" ref="fixed" v-show="fixedTitle">
       <div class="fixed-title">{{fixedTitle}}</div>
     </div>
+    <div class="loading-container" v-show="!data || !data.length">
+      <loading />
+    </div>
   </scroll>
 </template>
 
 <script>
 import Scroll from '@/base/scroll/scroll.vue'
+import Loading from '@/base/loading/loading.vue'
 import { htmlDataGetOrSet } from '@/common/js/dom.js'
 const SHORTCUT_ITEM_LENGTH = 18
 const FIXED_TITLE_HEIGHT = 30
@@ -118,7 +122,8 @@ export default {
     }
   },
   components: {
-    Scroll
+    Scroll,
+    Loading
   },
   computed: {
     shortcutList() {

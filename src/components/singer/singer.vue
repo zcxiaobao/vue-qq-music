@@ -8,6 +8,7 @@
 <script>
 import ListView from '@/base/listview/listview.vue'
 import { getSinger, getSingerByJsonp } from '@/api/singer.js'
+import { mapMutations } from 'vuex'
 import { ERR_OK } from '@/api/config.js'
 import Singer from '@/common/js/singer.js'
 const HOT_SINGER_LEN = 10
@@ -27,7 +28,11 @@ export default {
       this.$router.push({
         path: `/singer/${singer.id}`
       })
+      this.setSinger(singer)
     },
+    ...mapMutations({
+      setSinger: 'SET_SINGER'
+    }),
     _getSinger() {
       getSingerByJsonp().then(res => {
         if (res.code === ERR_OK) {

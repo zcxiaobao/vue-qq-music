@@ -1,14 +1,16 @@
-export const hasClass = function hasClass(el, className) {
+// 元素 class操作
+export const hasClass = (el, className) => {
   return el.classList.contains(className)
 }
-export const addClass = function (el, className) {
+export const addClass = (el, className) => {
   if (hasClass(el, className)) {
     return
   }
   el.classList.add(className)
 }
 
-export const htmlDataGetOrSet = function (el, key, val) {
+// html data-xxx 值的get及set
+export const htmlDataGetOrSet = (el, key, val) => {
   const attrPrefix = 'data-'
   if (!val) {
     return el && el.getAttribute(attrPrefix + key)
@@ -16,50 +18,25 @@ export const htmlDataGetOrSet = function (el, key, val) {
     el.setAttribute(attrPrefix + key, val)
   }
 }
-// export function hasClass(el, className) {
-//   let reg = new RegExp('(^|\\s)' + className + '(\\s|$)')
-//   return reg.test(el.className)
-// }
 
-// export function addClass(el, className) {
-//   if (hasClass(el, className)) {
-//     return
-//   }
-
-//   let newClass = el.className.split(' ')
-//   newClass.push(className)
-//   el.className = newClass.join(' ')
-// }
-
-// export function getData(el, name, val) {
-//   const prefix = 'data-'
-//   if (val) {
-//     return el.setAttribute(prefix + name, val)
-//   }
-//   return el.getAttribute(prefix + name)
-// }
-
-let elementStyle = document.createElement('div').style
-
-let vendor = (() => {
-  let transformNames = {
-    webkit: 'webkitTransform',
-    Moz: 'MozTransform',
-    O: 'OTransform',
-    ms: 'msTransform',
-    standard: 'transform'
+// js添加css前缀(能力检测)
+const elemmentStyle = document.createElement('div').style
+const vendor = (() => {
+  const transforms = {
+    'webkit': 'webkitTransform',
+    'moz': 'mozTransform',
+    'o': 'oTransform',
+    'ms': 'msTransform',
+    'standard': 'transform'
   }
-
-  for (let key in transformNames) {
-    if (elementStyle[transformNames[key]] !== undefined) {
+  for (let key in transforms) {
+    if (elemmentStyle[transforms[key]] !== undefined) {
       return key
     }
   }
-
   return false
 })()
-
-export function prefixStyle(style) {
+export const prefixStyle = (style) => {
   if (vendor === false) {
     return false
   }
@@ -67,6 +44,5 @@ export function prefixStyle(style) {
   if (vendor === 'standard') {
     return style
   }
-
   return vendor + style.charAt(0).toUpperCase() + style.substr(1)
 }

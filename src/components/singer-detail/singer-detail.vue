@@ -1,31 +1,72 @@
 <template>
-  <!-- <transition name="slide">歌单详情</transition> -->
-  <div class="singer-detail">歌单详情</div>
+  <transition name="slide">
+    <music-list :title="title" :bgImage="bgImage" :songs="songs" />
+  </transition>
 </template>
 
 <script>
+import MusicList from '@/components/music-list/music-list.vue'
+import { mapGetters } from 'vuex'
+import { getSingerSongList } from '@/api/singer.js'
+import { ERR_OK } from '@/api/config.js'
+import { createSong } from '@/common/js/song.js'
 export default {
-  name: 'Singer-Detail'
+  name: 'Singer-Detail',
+  computed: {
+    title() {
+      return this.singer.name
+    },
+    bgImage() {
+      return this.singer.avatar
+    },
+    ...mapGetters({
+      singer: 'singer'
+    })
+  },
+  created() {
+    this._getSingerSongList()
+  },
+  data() {
+    return {
+      songs: []
+    }
+  },
+  methods: {
+    _getSingerSongList() {
+      if (!this.singer.id) {
+        this.$router.push('/singer')
+        return
+      }
+      getSingerSongList(this.singer).then(({ data }) => {
+        if (data.code === ERR_OK) {
+          // console.log(data.singerSongList.data.songList)
+          this.songs = this._normallizeSong(data.singerSongList.data.songList)
+        }
+      })
+    },
+    _normallizeSong(list) {
+      const songs = []
+      list.forEach(song => {
+        songs.push(createSong(song.songInfo))
+      })
+      return songs
+    }
+  },
+  components: {
+    MusicList
+  }
 }
 </script>
 
 <style lang='less' scoped>
 @import '~@/common/styles/variable.less';
-.singer-detail {
-  position: fixed;
-  z-index: 100;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  background: @color-background;
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: all 0.3s;
 }
-// .slide-enter-active,
-// .slide-leave-active {
-//   transition: all 0.3s;
-// }
-// .slide-enter,
-// .slide-leave-to {
-//   transform: translate3d(100%, 0, 0);
-// }
+.slide-enter,
+.slide-leave-to {
+  transform: translate3d(100%, 0, 0);
+}
 </style>
