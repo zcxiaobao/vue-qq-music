@@ -1,6 +1,13 @@
 <template>
   <div class="recommend" ref="recommend">
-    <scroll ref="scroll" class="recommend-content" :data="recomPlayList">
+    <scroll
+      ref="scroll"
+      class="recommend-content"
+      :data="data"
+      :listenPullingUp="listenPullingUp"
+      :pullUpLoad="pullUpLoad"
+      @pullingUp="pullingUp"
+    >
       <div>
         <div v-if="sliderItems.length" class="slider-wrapper" ref="sliderWrapper">
           <slider>
@@ -25,6 +32,20 @@
             </li>
           </ul>
         </div>
+        <div class="recommend-list">
+          <h1 class="list-title">热门歌单推荐</h1>
+          <ul>
+            <li v-for="item in newSongList" class="item" :key="item.id">
+              <div class="icon">
+                <img width="60" height="60" v-lazy="item.image" />
+              </div>
+              <div class="text">
+                <h2 class="name" v-html="item.name"></h2>
+                <p class="desc" v-html="item.sing"></p>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
       <div class="loading-container" v-show="!recomPlayList.length">
         <loading />
@@ -35,8 +56,13 @@
 </template>
 
 <script>
-import { getRecomSlider, getRecomPlayList } from '@/api/recommand.js'
+import {
+  getRecomSlider,
+  getRecomPlayList,
+  getNewSongList
+} from '@/api/recommand.js'
 import { ERR_OK } from '@/api/config.js'
+import { createSong } from '@/common/js/song.js'
 import Slider from '@/base/slider/slider.vue'
 import Scroll from '@/base/scroll/scroll.vue'
 import Loading from '@/base/loading/loading.vue'
@@ -45,10 +71,25 @@ export default {
   data() {
     return {
       sliderItems: [], // 轮播图信息
-      recomPlayList: [] // 热门歌单信息
+      recomPlayList: [], // 推荐歌单信息
+      newSongList: [], // 新歌列表
+      pullUpLoad: {
+        threshold: 20
+      },
+      listenPullingUp: true,
+      newSongListPageIndex: 1
     }
   },
   methods: {
+    pullingUp() {
+      this._getNewSongList()
+    },
+    loadImg() {
+      if (!this.checkLoaded) {
+        this.$refs.scroll.refresh()
+        this.checkLoaded = true
+      }
+    },
     _getRecomSlider() {
       getRecomSlider().then(({ data }) => {
         if (data.code === ERR_OK) {
@@ -63,13 +104,31 @@ export default {
         }
       })
     },
-    loadImg() {
-      if (!this.checkLoaded) {
-        this.$refs.scroll.refresh()
-        this.checkLoaded = true
-      }
+    _getNewSongList() {
+      this.newSongListPageIndex++
+      getNewSongList(this.newSongListPageIndex).then(({ data }) => {
+        if (data.code === ERR_OK) {
+          if (data.newSongList && data.newSongList.length > 0) {
+            const list = this._normallizeSong(data.newSongList)
+            this.newSongList = [...this.newSongList, ...list]
+          }
+        }
+      })
+    },
+    _normallizeSong(list) {
+      const songs = []
+      list.forEach(song => {
+        songs.push(createSong(song))
+      })
+      return songs
     }
   },
+  computed: {
+    data() {
+      return [...this.newSongList, ...this.recomPlayList]
+    }
+  },
+
   created() {
     this._getRecomSlider()
     this._getRecomPlayList()

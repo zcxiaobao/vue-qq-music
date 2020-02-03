@@ -23,6 +23,14 @@ export default {
     listenScroll: {
       type: Boolean,
       default: false
+    },
+    listenPullingUp: {
+      type: Boolean,
+      default: false
+    },
+    pullUpLoad: {
+      type: Object,
+      default: null
     }
   },
   methods: {
@@ -32,11 +40,21 @@ export default {
       }
       this.scroll = new BScroll(this.$refs.wrapper, {
         probeType: this.probeType,
-        click: this.click
+        click: this.click,
+        pullUpLoad: this.pullUpLoad
       })
       if (this.listenScroll) {
         this.scroll.on('scroll', pos => {
           this.$emit('scroll', pos)
+        })
+      }
+      if (this.listenPullingUp) {
+        this.scroll.on('pullingUp', () => {
+          this.$emit('pullingUp')
+          // setTimeout(() => {
+          //   this.finishPullUp()
+          //   this.refresh()
+          // }, 500)
         })
       }
     },
@@ -46,6 +64,9 @@ export default {
     disable() {
       this.scroll && this.s.disable()
     },
+    destroy() {
+      this.scroll && this.scroll.destroy()
+    },
     refresh() {
       this.scroll && this.scroll.refresh()
     },
@@ -54,6 +75,9 @@ export default {
     },
     scrollToElement() {
       this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments)
+    },
+    finishPullUp() {
+      this.scroll && this.scroll.finishPullUp()
     }
   },
   mounted() {
@@ -64,7 +88,10 @@ export default {
   watch: {
     data() {
       setTimeout(() => {
-        this._initScroll()
+        // this.destroy()
+        this.finishPullUp()
+
+        this.refresh()
       }, 20)
     }
   }

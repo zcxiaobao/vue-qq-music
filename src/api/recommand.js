@@ -33,7 +33,7 @@ export const getRecomSlider = function () {
       return Promise.resolve(res)
     })
 }
-
+// 获取推荐页 recomPlayList信息
 export const getRecomPlayList = function () {
   const playListUrl = '/getRecomPlayList'
   const data = {
@@ -50,6 +50,37 @@ export const getRecomPlayList = function () {
           cmd: 2
         },
         module: 'playlist.HotRecommendServer'
+      }
+    }
+  }
+  return axios
+    .get(playListUrl, {
+      params: data
+    })
+    .then(res => {
+      return Promise.resolve(res)
+    })
+}
+// 获取推荐页 newSong信息
+export const getNewSongList = function (pi, ps = 8) {
+  const playListUrl = '/getNewSongList'
+  const data = {
+    ...qqMusicConfigParam,
+    '-': 'recom030954476498489703',
+    data: {
+      comm: {
+        ct: 24
+      },
+      new_song: {
+        module: 'newsong.NewSongServer',
+        method: 'get_new_song_info',
+        param: {
+          type: 5
+        },
+        songlistPage: {
+          pi,
+          ps
+        }
       }
     }
   }
