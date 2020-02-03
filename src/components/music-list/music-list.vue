@@ -38,7 +38,7 @@ import SongList from '@/base/song-list/song-list.vue'
 import Loading from '@/base/loading/loading.vue'
 import { prefixStyle } from '@/common/js/dom.js'
 const TITLE_HEIGHT = 40 // 标题高度
-const transform = prefixStyle('tranform') // transform 添加css前缀
+const transform = prefixStyle('transform') // transform 添加css前缀
 let minTranslateY = 0 // 歌单滚动最小坐标 Y
 let imgHeight = 0 // 背景图片高度
 
