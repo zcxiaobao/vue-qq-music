@@ -35,11 +35,7 @@
 </template>
 
 <script>
-import {
-  getRecommandSlider,
-  getAllInfo,
-  getMusicHomeData
-} from '@/api/recommand.js'
+import { getRecomSlider, getRecomPlayList } from '@/api/recommand.js'
 import { ERR_OK } from '@/api/config.js'
 import Slider from '@/base/slider/slider.vue'
 import Scroll from '@/base/scroll/scroll.vue'
@@ -53,17 +49,16 @@ export default {
     }
   },
   methods: {
-    // _getRecommandSlider() {
-    //   getRecommandSlider().then(res => {
-    //     if (res.code === ERR_OK) {
-    //       this.sliderItems = res.data.slider
-    //     }
-    //   })
-    // },
-    _getMusicHomeData() {
-      getMusicHomeData().then(({ data }) => {
+    _getRecomSlider() {
+      getRecomSlider().then(({ data }) => {
         if (data.code === ERR_OK) {
           this.sliderItems = data.focus.data.content
+        }
+      })
+    },
+    _getRecomPlayList() {
+      getRecomPlayList().then(({ data }) => {
+        if (data.code === ERR_OK) {
           this.recomPlayList = data.recomPlaylist.data.v_hot
         }
       })
@@ -76,8 +71,8 @@ export default {
     }
   },
   created() {
-    // this._getRecommandSlider()
-    this._getMusicHomeData()
+    this._getRecomSlider()
+    this._getRecomPlayList()
   },
   components: {
     Slider,

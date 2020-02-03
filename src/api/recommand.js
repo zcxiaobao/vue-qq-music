@@ -8,17 +8,72 @@ import {
 import axios from 'axios'
 axios.defaults.withCredentials = true
 
-export const getRecommandSlider = function () {
-  const sliderUrl =
-    'https://c.y.qq.com/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg'
+// 获取推荐页 slider信息
+export const getRecomSlider = function () {
+  const sliderUrl = '/getRecomSlider'
   const data = {
-    ...configParam,
-    platform: 'h5',
-    uin: 0,
-    needNewCode: 1
+    ...qqMusicConfigParam,
+    '-': 'recom030954476498489703',
+    data: {
+      comm: {
+        ct: 24
+      },
+      focus: {
+        module: 'QQMusic.MusichallServer',
+        method: 'GetFocus',
+        param: {}
+      }
+    }
   }
-  return jsonp(sliderUrl, data, options)
+  return axios
+    .get(sliderUrl, {
+      params: data
+    })
+    .then(res => {
+      return Promise.resolve(res)
+    })
 }
+
+export const getRecomPlayList = function () {
+  const playListUrl = '/getRecomPlayList'
+  const data = {
+    ...qqMusicConfigParam,
+    '-': 'recom030954476498489703',
+    data: {
+      comm: {
+        ct: 24
+      },
+      recomPlaylist: {
+        method: 'get_hot_recommend',
+        param: {
+          async: 1,
+          cmd: 2
+        },
+        module: 'playlist.HotRecommendServer'
+      }
+    }
+  }
+  return axios
+    .get(playListUrl, {
+      params: data
+    })
+    .then(res => {
+      return Promise.resolve(res)
+    })
+}
+
+// export const getRecommandSlider = function () {
+//   const sliderUrl =
+//     'https://c.y.qq.com/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg'
+//   const data = {
+//     ...configParam,
+//     platform: 'h5',
+//     uin: 0,
+//     needNewCode: 1
+//   }
+//   return jsonp(sliderUrl, data, options)
+// }
+
 export const getAllInfo = function () {
   const infoUrl = '/getAllInfo'
   const data = {
