@@ -38,8 +38,9 @@
               </div>
               <div class="text">
                 <h2 class="name" v-html="item.name"></h2>
-                <p class="desc" v-html="item.sing"></p>
+                <p class="desc" v-html="item.singer"></p>
               </div>
+              <div class="interval">{{_normallizeSongInterval(item.interval)}}</div>
             </li>
           </ul>
           <loading class="newsong-loading" v-show="newSongLoading && !isNewSongBottom" />
@@ -126,6 +127,11 @@ export default {
         songs.push(createSong(song))
       })
       return songs
+    },
+    _normallizeSongInterval(seconds) {
+      const mins = `${Math.floor(seconds / 60)}`
+      const secs = `${seconds % 60}`
+      return `${mins.padStart(2, '0')}:${secs.padStart(2, '0')}`
     }
   },
   computed: {
@@ -233,10 +239,22 @@ export default {
           .name {
             margin-bottom: 10px;
             color: @color-text;
+            .no-wrap();
           }
           .desc {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
             color: @color-text-d;
           }
+        }
+        .interval {
+          flex: 0 0 50px;
+          text-align: center;
+          align-self: center;
+          color: @color-text-ll;
+          font-size: @font-size-small;
+          margin-left: 10px;
         }
       }
     }
