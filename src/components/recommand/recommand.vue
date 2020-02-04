@@ -20,20 +20,17 @@
         </div>
         <div class="recommend-list">
           <h1 class="list-title">热门歌单推荐</h1>
-          <ul>
-            <li v-for="item in recomPlayList" class="item" :key="item.content_id">
+          <ul class="recom-wrapper">
+            <li v-for="item in recomPlayList" class="recom-item" :key="item.content_id">
               <div class="icon">
-                <img width="60" height="60" v-lazy="item.cover" />
+                <img v-lazy="item.cover" />
               </div>
-              <div class="text">
-                <h2 class="name" v-html="item.username"></h2>
-                <p class="desc" v-html="item.title"></p>
-              </div>
+              <div class="text" v-html="item.title"></div>
             </li>
           </ul>
         </div>
         <div class="recommend-list">
-          <h1 class="list-title">热门歌单推荐</h1>
+          <h1 class="list-title">最新音乐</h1>
           <ul>
             <li v-for="item in newSongList" class="item" :key="item.id">
               <div class="icon">
@@ -45,6 +42,8 @@
               </div>
             </li>
           </ul>
+          <loading class="newsong-loading" v-show="newSongLoading && !isNewSongBottom" />
+          <p class="recommend-bottom" v-show="isNewSongBottom">——我也是有底线的——</p>
         </div>
       </div>
       <div class="loading-container" v-show="!recomPlayList.length">
@@ -77,7 +76,9 @@ export default {
         threshold: 20
       },
       listenPullingUp: true,
-      newSongListPageIndex: 1
+      newSongListPageIndex: 0,
+      newSongLoading: false,
+      isNewSongBottom: false
     }
   },
   methods: {
@@ -100,17 +101,21 @@ export default {
     _getRecomPlayList() {
       getRecomPlayList().then(({ data }) => {
         if (data.code === ERR_OK) {
-          this.recomPlayList = data.recomPlaylist.data.v_hot
+          this.recomPlayList = data.recomPlaylist.data.v_hot.slice(0, 9)
         }
       })
     },
     _getNewSongList() {
       this.newSongListPageIndex++
+      this.newSongLoading = true
       getNewSongList(this.newSongListPageIndex).then(({ data }) => {
         if (data.code === ERR_OK) {
           if (data.newSongList && data.newSongList.length > 0) {
             const list = this._normallizeSong(data.newSongList)
             this.newSongList = [...this.newSongList, ...list]
+            this.newSongLoading = false
+          } else {
+            this.isNewSongBottom = true
           }
         }
       })
@@ -132,6 +137,7 @@ export default {
   created() {
     this._getRecomSlider()
     this._getRecomPlayList()
+    this._getNewSongList()
   },
   components: {
     Slider,
@@ -143,6 +149,7 @@ export default {
 
 <style lang="less" scoped>
 @import '~@/common/styles/variable.less';
+@import '~@/common/styles/mixin.less';
 .recommend {
   position: fixed;
   width: 100%;
@@ -158,11 +165,52 @@ export default {
     }
     .recommend-list {
       .list-title {
-        height: 65px;
-        line-height: 65px;
-        text-align: center;
-        font-size: @font-size-medium;
+        height: 45px;
+        line-height: 45px;
+        padding-left: 9px;
+        font-size: @font-size-large;
         color: @color-theme;
+        position: relative;
+        &::after {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 0px;
+          width: 3px;
+          height: 16px;
+          transform: translate(0, -50%);
+          background-color: #f00;
+        }
+      }
+      .recom-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        .recom-item {
+          flex: 1 0 30%;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+          align-items: center;
+          margin: 5px;
+          .icon {
+            flex: 0 0 80px;
+            width: 100%;
+            img {
+              width: 100%;
+            }
+          }
+          .text {
+            line-height: 1.2;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            font-size: @font-size-medium;
+            color: @color-text-d;
+          }
+        }
       }
       .item {
         display: flex;
@@ -197,6 +245,13 @@ export default {
       width: 100%;
       top: 50%;
       transform: translateY(-50%);
+    }
+    .recommend-bottom {
+      text-align: center;
+      color: @color-text-d;
+      font-size: @font-size-medium;
+      height: 40px;
+      line-height: 40px;
     }
   }
 }

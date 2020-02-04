@@ -51,10 +51,6 @@ export default {
       if (this.listenPullingUp) {
         this.scroll.on('pullingUp', () => {
           this.$emit('pullingUp')
-          // setTimeout(() => {
-          //   this.finishPullUp()
-          //   this.refresh()
-          // }, 500)
         })
       }
     },
@@ -77,7 +73,9 @@ export default {
       this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments)
     },
     finishPullUp() {
-      this.scroll && this.scroll.finishPullUp()
+      if (this.listenPullingUp) {
+        this.scroll && this.scroll.finishPullUp()
+      }
     }
   },
   mounted() {

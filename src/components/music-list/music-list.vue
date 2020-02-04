@@ -146,7 +146,6 @@ export default {
       color: @color-theme;
     }
   }
-
   .title {
     position: absolute;
     top: 0;
