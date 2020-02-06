@@ -14,7 +14,8 @@ module.exports = {
     "space-before-function-paren": "off",
     indent: [0, 2],
     "no-unused-vars": "off",
-    "no-useless-escape": "off"
+    "no-useless-escape": "off",
+    "standard/computed-property-even-spacing": "off"
   },
   parserOptions: {
     parser: 'babel-eslint'

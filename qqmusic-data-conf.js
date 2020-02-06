@@ -79,4 +79,16 @@ module.exports = function before(app, server, compiler) {
         console.log(e)
       })
   })
+
+  // 获取音乐的vkey
+  app.get('/getMusicVkey', (req, res) => {
+    sendAxiosAjax(url, req.query)
+      .then(response => {
+        console.log(response)
+        return res.json(response.data)
+      })
+      .catch(e => {
+        console.log(e)
+      })
+  })
 }

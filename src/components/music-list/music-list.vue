@@ -23,7 +23,7 @@
       ref="list"
     >
       <div class="song-list-wrapper">
-        <song-list :songs="songs" />
+        <song-list :songs="songs" @select="selectSong" />
       </div>
       <div class="loading-container" v-show="!songs || !songs.length">
         <loading />
@@ -37,6 +37,7 @@ import Scroll from '@/base/scroll/scroll.vue'
 import SongList from '@/base/song-list/song-list.vue'
 import Loading from '@/base/loading/loading.vue'
 import { prefixStyle } from '@/common/js/dom.js'
+import { mapActions } from 'vuex'
 const TITLE_HEIGHT = 40 // 标题高度
 const transform = prefixStyle('transform') // transform 添加css前缀
 let minTranslateY = 0 // 歌单滚动最小坐标 Y
@@ -72,6 +73,13 @@ export default {
     minTranslateY = -imgHeight + TITLE_HEIGHT
   },
   methods: {
+    ...mapActions(['selectPlay']),
+    selectSong(song, index) {
+      this.selectPlay({
+        list: this.songs,
+        index
+      })
+    },
     scroll(pos) {
       this.scrollY = pos.y
     },
