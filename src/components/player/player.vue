@@ -36,9 +36,11 @@
             <span class="dot"></span>
           </div>
           <div class="progress-wrapper">
-            <span class="time time-l"></span>
-            <div class="progress-bar-wrapper"></div>
-            <span class="time time-r"></span>
+            <span class="time time-l">{{_normallizeSongInterval(currentTime)}}</span>
+            <div class="progress-bar-wrapper">
+              <progress-bar :precent="precent" @progressmove="progressmove" />
+            </div>
+            <span class="time time-r">{{_normallizeSongInterval(currentSong.interval)}}</span>
           </div>
           <div class="operators">
             <div class="icon i-left">
@@ -75,11 +77,18 @@
         </div>
       </div>
     </transition>
-    <audio ref="audio" :src="currentSongUrl" @canplay="play"></audio>
+    <audio
+      ref="audio"
+      :src="currentSongUrl"
+      @canplay="play"
+      @timeupdate="updateCreateTime"
+      @ended="audioEnd"
+    ></audio>
   </div>
 </template>
 
-<script type="text/ecmascript-6">
+<script>
+import ProgressBar from '@/base/progress-bar/progress-bar.vue'
 import { mapGetters, mapMutations } from 'vuex'
 import { getSongVkey } from '@/api/singer.js'
 import { prefixStyle } from '@/common/js/dom.js'
@@ -89,7 +98,8 @@ const transform = prefixStyle('transform')
 export default {
   data() {
     return {
-      songReady: false
+      songReady: false,
+      currentTime: 0
     }
   },
   computed: {
@@ -109,6 +119,9 @@ export default {
     },
     cdCls() {
       return this.playing ? 'play' : 'play pause'
+    },
+    precent() {
+      return this.currentTime / this.currentSong.interval
     }
   },
   methods: {
@@ -134,6 +147,7 @@ export default {
         this.togglePlaying()
       }
       this.songReady = false
+      this.currentTime = 0
     },
     prev() {
       if (!this.songReady) {
@@ -148,15 +162,28 @@ export default {
         this.togglePlaying()
       }
       this.songReady = false
+      this.currentTime = 0
     },
     play() {
       this.songReady = true
     },
+    audioEnd() {
+      this.next()
+    },
     togglePlaying() {
       this.setPlaying(!this.playing)
     },
+    progressmove(precent) {
+      this.$refs.audio.currentTime = this.currentSong.interval * precent
+      if (!this.playing) {
+        this.togglePlaying()
+      }
+    },
     back() {
       this.setFullScreen(false)
+    },
+    updateCreateTime(e) {
+      this.currentTime = e.target.currentTime
     },
 
     enter(el, done) {
@@ -213,15 +240,15 @@ export default {
         window.innerHeight - paddingBottom - originWidth / 2 - paddingTop
       const scale = targetWidth / originWidth
       return { x, y, scale }
+    },
+    _normallizeSongInterval(seconds) {
+      const mins = `${(seconds / 60) | 0}`
+      const secs = `${seconds % 60 | 0}`
+      return `${mins.padStart(2, '0')}:${secs.padStart(2, '0')}`
     }
   },
   watch: {
     playing(newPlaying) {
-      // getSongVkey(this.currentSong.mid).then(({ data }) => {
-      //   const currentSongUrl =
-      //     data.req_0.data.sip[0] + data.req_0.data.midurlinfo[0].purl
-      //   console.log(currentSongUrl)
-      //   this.setCurrentSongUrl(currentSongUrl)
       if (!this.songReady) {
         return
       }
@@ -229,7 +256,6 @@ export default {
         const audio = this.$refs.audio
         newPlaying ? audio.play() : audio.pause()
       })
-      // })
     },
     currentSong(newSong, oldSong) {
       getSongVkey(newSong.mid).then(({ data }) => {
@@ -244,6 +270,9 @@ export default {
         })
       })
     }
+  },
+  components: {
+    ProgressBar
   }
 }
 </script>
@@ -436,7 +465,7 @@ export default {
         .time {
           color: @color-text;
           font-size: @font-size-small;
-          flex: 0 0 30px;
+          flex: 0 0 32px;
           line-height: 30px;
           width: 30px;
 
