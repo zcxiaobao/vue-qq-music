@@ -21,7 +21,7 @@
         <div class="middle">
           <div class="middle-l" ref="middleL">
             <div class="cd-wrapper" ref="cdWrapper">
-              <div class="cd">
+              <div class="cd" :class="cdCls">
                 <img class="image" :src="currentSong.image" />
               </div>
             </div>
@@ -44,14 +44,14 @@
             <div class="icon i-left">
               <i class="icon-sequence"></i>
             </div>
-            <div class="icon i-left">
-              <i class="icon-prev"></i>
+            <div class="icon i-left" :class="disableCls">
+              <i class="icon-prev" @click="prev"></i>
             </div>
-            <div class="icon i-center">
+            <div class="icon i-center" :class="disableCls">
               <i @click="togglePlaying" class="icon" :class="playIcon"></i>
             </div>
-            <div class="icon i-right">
-              <i class="icon-next"></i>
+            <div class="icon i-right" :class="disableCls">
+              <i class="icon-next" @click="next"></i>
             </div>
             <div class="icon i-right">
               <i class="icon icon-not-favorite"></i>
@@ -61,7 +61,7 @@
       </div>
     </transition>
     <transition name="mini">
-      <div class="mini-player" v-show="!fullScreen">
+      <div class="mini-player" v-show="!fullScreen" @click="open">
         <div class="icon">
           <img width="40" height="40" :src="currentSong.image" />
         </div>
@@ -75,7 +75,7 @@
         </div>
       </div>
     </transition>
-    <audio ref="audio" :src="currentSongUrl"></audio>
+    <audio ref="audio" :src="currentSongUrl" @canplay="play"></audio>
   </div>
 </template>
 
@@ -87,24 +87,71 @@ import animations from 'create-keyframe-animation'
 
 const transform = prefixStyle('transform')
 export default {
+  data() {
+    return {
+      songReady: false
+    }
+  },
   computed: {
     ...mapGetters([
       'fullScreen',
       'currentSong',
       'playlist',
       'playing',
-      'currentSongUrl'
+      'currentSongUrl',
+      'currentIndex'
     ]),
     playIcon() {
       return this.playing ? 'icon-pause' : 'icon-play'
+    },
+    disableCls() {
+      return this.songReady ? '' : 'disable'
+    },
+    cdCls() {
+      return this.playing ? 'play' : 'play pause'
     }
   },
   methods: {
     ...mapMutations({
       setFullScreen: 'SET_FULL_SCREEN',
       setCurrentSongUrl: 'SET_CURRENT_SONG_URL',
-      setPlaying: 'SET_PLAYING_STATE'
+      setPlaying: 'SET_PLAYING_STATE',
+      setCurrentIndex: 'SET_CURRENT_INDEX'
     }),
+    open() {
+      this.setFullScreen(true)
+    },
+    next() {
+      if (!this.songReady) {
+        return
+      }
+      let index = this.currentIndex + 1
+      if (index === this.playlist.length) {
+        index = 0
+      }
+      this.setCurrentIndex(index)
+      if (!this.playing) {
+        this.togglePlaying()
+      }
+      this.songReady = false
+    },
+    prev() {
+      if (!this.songReady) {
+        return
+      }
+      let index = this.currentIndex - 1
+      if (index === -1) {
+        index = this.playlist.length - 1
+      }
+      this.setCurrentIndex(index)
+      if (!this.playing) {
+        this.togglePlaying()
+      }
+      this.songReady = false
+    },
+    play() {
+      this.songReady = true
+    },
     togglePlaying() {
       this.setPlaying(!this.playing)
     },
@@ -175,14 +222,17 @@ export default {
       //     data.req_0.data.sip[0] + data.req_0.data.midurlinfo[0].purl
       //   console.log(currentSongUrl)
       //   this.setCurrentSongUrl(currentSongUrl)
+      if (!this.songReady) {
+        return
+      }
       this.$nextTick(() => {
         const audio = this.$refs.audio
         newPlaying ? audio.play() : audio.pause()
       })
       // })
     },
-    currentSong() {
-      getSongVkey(this.currentSong.mid).then(({ data }) => {
+    currentSong(newSong, oldSong) {
+      getSongVkey(newSong.mid).then(({ data }) => {
         const currentSongUrl =
           data.req_0.data.sip[0] + data.req_0.data.midurlinfo[0].purl
         console.log(currentSongUrl)
