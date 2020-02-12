@@ -43,8 +43,8 @@
             <span class="time time-r">{{_normallizeSongInterval(currentSong.interval)}}</span>
           </div>
           <div class="operators">
-            <div class="icon i-left">
-              <i class="icon-sequence"></i>
+            <div class="icon i-left" @click="changeMode">
+              <i :class="iconMode"></i>
             </div>
             <div class="icon i-left" :class="disableCls">
               <i class="icon-prev" @click="prev"></i>
@@ -71,7 +71,9 @@
           <h2 class="name" v-html="currentSong.name"></h2>
           <p class="desc" v-html="currentSong.singer"></p>
         </div>
-        <div class="control"></div>
+        <div class="control">
+          <i @click="togglePlaying" class="icon-mini" :class="playMiniIcon"></i>
+        </div>
         <div class="control">
           <i class="icon-playlist"></i>
         </div>
@@ -92,7 +94,9 @@ import ProgressBar from '@/base/progress-bar/progress-bar.vue'
 import { mapGetters, mapMutations } from 'vuex'
 import { getSongVkey } from '@/api/singer.js'
 import { prefixStyle } from '@/common/js/dom.js'
+import { playMode } from '@/common/js/config.js'
 import animations from 'create-keyframe-animation'
+import { shuffle } from '@/common/js/util.js'
 
 const transform = prefixStyle('transform')
 export default {
@@ -109,10 +113,15 @@ export default {
       'playlist',
       'playing',
       'currentSongUrl',
-      'currentIndex'
+      'currentIndex',
+      'mode',
+      'sequenceList'
     ]),
     playIcon() {
       return this.playing ? 'icon-pause' : 'icon-play'
+    },
+    playMiniIcon() {
+      return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
     },
     disableCls() {
       return this.songReady ? '' : 'disable'
@@ -122,6 +131,13 @@ export default {
     },
     precent() {
       return this.currentTime / this.currentSong.interval
+    },
+    iconMode() {
+      return this.mode === playMode.sequence
+        ? 'icon-sequence'
+        : this.mode === playMode.loop
+        ? 'icon-loop'
+        : 'icon-random'
     }
   },
   methods: {
@@ -129,13 +145,34 @@ export default {
       setFullScreen: 'SET_FULL_SCREEN',
       setCurrentSongUrl: 'SET_CURRENT_SONG_URL',
       setPlaying: 'SET_PLAYING_STATE',
-      setCurrentIndex: 'SET_CURRENT_INDEX'
+      setCurrentIndex: 'SET_CURRENT_INDEX',
+      setPlayMode: 'SET_PLAY_MODE',
+      setPlayList: 'SET_PLAYLIST'
     }),
+    changeMode() {
+      const mode = (this.mode + 1) % 3
+      this.setPlayMode(mode)
+      let songList = null
+      if (mode === playMode.random) {
+        songList = shuffle(this.playlist)
+      } else {
+        songList = this.sequenceList
+      }
+      const nowSongIndex = songList.findIndex(song => {
+        return song.id === this.currentSong.id
+      })
+      this.setCurrentIndex(nowSongIndex)
+      this.setPlayList(songList)
+    },
     open() {
       this.setFullScreen(true)
     },
     next() {
       if (!this.songReady) {
+        return
+      }
+      if (this.playlist.length === 1) {
+        this.loop()
         return
       }
       let index = this.currentIndex + 1
@@ -153,6 +190,10 @@ export default {
       if (!this.songReady) {
         return
       }
+      if (this.playlist.length === 1) {
+        this.loop()
+        return
+      }
       let index = this.currentIndex - 1
       if (index === -1) {
         index = this.playlist.length - 1
@@ -168,7 +209,16 @@ export default {
       this.songReady = true
     },
     audioEnd() {
-      this.next()
+      if (this.mode === playMode.loop) {
+        this.loop()
+      } else {
+        this.next()
+      }
+    },
+    loop() {
+      this.$refs.audio.currentTime = 0
+      this.$refs.audio.play()
+      this.setPlaying(true)
     },
     togglePlaying() {
       this.setPlaying(!this.playing)

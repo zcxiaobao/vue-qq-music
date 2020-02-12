@@ -6,7 +6,7 @@
     <h1 class="title">{{title}}</h1>
     <div class="bg-image" ref="bgImage" :style="bgStyle">
       <div class="play-wrapper">
-        <div ref="playBtn" v-show="songs.length>0" class="play">
+        <div ref="playBtn" v-show="songs.length>0" class="play" @click="randomPlaySong">
           <i class="icon-play"></i>
           <span class="text">随机播放全部</span>
         </div>
@@ -73,7 +73,10 @@ export default {
     minTranslateY = -imgHeight + TITLE_HEIGHT
   },
   methods: {
-    ...mapActions(['selectPlay']),
+    ...mapActions(['selectPlay', 'randomPlay']),
+    randomPlaySong() {
+      this.randomPlay({ list: this.songs })
+    },
     selectSong(song, index) {
       this.selectPlay({
         list: this.songs,
