@@ -91,4 +91,16 @@ module.exports = function before(app, server, compiler) {
         console.log(e)
       })
   })
+
+  // 获取音乐的歌词
+  app.get('/getLyric', (req, res) => {
+    const url = 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg'
+    sendAxiosAjax(url, req.query)
+      .then(response => {
+        return res.json(response.data)
+      })
+      .catch(e => {
+        console.log(e)
+      })
+  })
 }

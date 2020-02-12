@@ -1,5 +1,9 @@
-// import {getLyric} from 'api/song'
-// import {ERR_OK} from 'api/config'
+import {
+  getLyric
+} from '@/api/song.js'
+import {
+  ERR_OK
+} from '@/api/config.js'
 // import {Base64} from 'js-base64'
 
 class Song {
@@ -19,6 +23,11 @@ class Song {
     this.album = album
     this.interval = interval
     this.image = image
+  }
+  getLyric() {
+    getLyric(this.mid).then(res => {
+      console.log(res)
+    })
   }
 }
 

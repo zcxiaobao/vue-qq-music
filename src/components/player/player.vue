@@ -317,6 +317,9 @@ export default {
         this.$nextTick(() => {
           const audio = this.$refs.audio
           audio.play()
+          this.currentSong.getLyric().then(res => {
+            console.log(res)
+          })
         })
       })
     }

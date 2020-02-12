@@ -5,6 +5,10 @@ import {
 import {
   shuffle
 } from '@/common/js/util.js'
+
+function findSongIndex(list, song) {
+  return list.findIndex(item => item.id === song.id)
+}
 export const selectPlay = function ({
   commit,
   state
@@ -12,8 +16,14 @@ export const selectPlay = function ({
   list,
   index
 }) {
+  if (state.mode === playMode.random) {
+    const randomList = shuffle(list)
+    index = findSongIndex(randomList, list[index])
+    commit(types.SET_PLAYLIST, randomList)
+  } else {
+    commit(types.SET_PLAYLIST, list)
+  }
   commit(types.SET_SEQUENCE_LIST, list)
-  commit(types.SET_PLAYLIST, list)
   commit(types.SET_CURRENT_INDEX, index)
   commit(types.SET_FULL_SCREEN, true)
   commit(types.SET_PLAYING_STATE, true)
