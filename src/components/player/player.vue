@@ -29,6 +29,19 @@
               <div class="playing-lyric"></div>
             </div>
           </div>
+          <scroll class="middle-r" ref="lyricList">
+            <div class="lyric-wrapper" :data="currentLyric && currentLyric.lines">
+              <div v-if="currentLyric">
+                <p
+                  ref="lyricLine"
+                  class="text"
+                  :class="{'current': currentLineNum === index}"
+                  v-for="(line,index) in currentLyric.lines"
+                  :key="line.time"
+                >{{line.txt}}</p>
+              </div>
+            </div>
+          </scroll>
         </div>
         <div class="bottom">
           <div class="dot-wrapper">
@@ -91,19 +104,23 @@
 
 <script>
 import ProgressBar from '@/base/progress-bar/progress-bar.vue'
+import Scroll from '@/base/scroll/scroll.vue'
 import { mapGetters, mapMutations } from 'vuex'
 import { getSongVkey } from '@/api/singer.js'
 import { prefixStyle } from '@/common/js/dom.js'
 import { playMode } from '@/common/js/config.js'
 import animations from 'create-keyframe-animation'
 import { shuffle } from '@/common/js/util.js'
+import Lyric from 'lyric-parser'
 
 const transform = prefixStyle('transform')
 export default {
   data() {
     return {
       songReady: false,
-      currentTime: 0
+      currentTime: 0,
+      currentLyric: null,
+      currentLineNum: 0
     }
   },
   computed: {
@@ -117,6 +134,7 @@ export default {
       'mode',
       'sequenceList'
     ]),
+
     playIcon() {
       return this.playing ? 'icon-pause' : 'icon-play'
     },
@@ -149,6 +167,7 @@ export default {
       setPlayMode: 'SET_PLAY_MODE',
       setPlayList: 'SET_PLAYLIST'
     }),
+
     changeMode() {
       const mode = (this.mode + 1) % 3
       this.setPlayMode(mode)
@@ -274,6 +293,33 @@ export default {
       cdWrapper.removeEventListener('transitionend', done)
       cdWrapper.addEventListener('transitionend', done)
     },
+    handlerLyric({ lineNum, txt }) {
+      this.currentLineNum = lineNum
+      const lyricLines = this.$refs.lyricLine
+      if (lineNum > 5) {
+        this.$refs.lyricList.scrollToElement(lyricLines[lineNum - 5], 1000)
+      } else {
+        this.$refs.lyricList.scrollTo(0, 0, 1000)
+      }
+    },
+    getLyric() {
+      this.currentSong
+        .getLyric()
+        .then(lyric => {
+          if (this.currentSong.lyric !== lyric) {
+            return
+          }
+          this.currentLyric = new Lyric(lyric, this.handlerLyric)
+          if (this.playing) {
+            this.currentLyric.play()
+          }
+        })
+        .catch(() => {
+          this.currentSong.lyric = ''
+          this.currentLineNum = 0
+          this.currentLyric = null
+        })
+    },
     afterLeave() {
       const cdWrapper = this.$refs.cdWrapper
       cdWrapper.style.transition = ''
@@ -313,19 +359,17 @@ export default {
           data.req_0.data.sip[0] + data.req_0.data.midurlinfo[0].purl
         console.log(currentSongUrl)
         this.setCurrentSongUrl(currentSongUrl)
-        // this.setPlaying(true)
         this.$nextTick(() => {
           const audio = this.$refs.audio
           audio.play()
-          this.currentSong.getLyric().then(res => {
-            console.log(res)
-          })
+          this.getLyric()
         })
       })
     }
   },
   components: {
-    ProgressBar
+    ProgressBar,
+    Scroll
   }
 }
 </script>
