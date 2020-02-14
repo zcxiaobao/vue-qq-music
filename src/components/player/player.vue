@@ -18,7 +18,12 @@
           <h1 class="title" v-html="currentSong.name"></h1>
           <h2 class="subtitle" v-html="currentSong.singer"></h2>
         </div>
-        <div class="middle">
+        <div
+          class="middle"
+          @touchstart="middleTouchStart"
+          @touchmove="middleTouchMove"
+          @touchend="middleTouchEnd"
+        >
           <div class="middle-l" ref="middleL">
             <div class="cd-wrapper" ref="cdWrapper">
               <div class="cd" :class="cdCls">
@@ -26,7 +31,7 @@
               </div>
             </div>
             <div class="playing-lyric-wrapper">
-              <div class="playing-lyric"></div>
+              <div class="playing-lyric">{{lyricCurrentTxt}}</div>
             </div>
           </div>
           <scroll class="middle-r" ref="lyricList">
@@ -45,8 +50,8 @@
         </div>
         <div class="bottom">
           <div class="dot-wrapper">
-            <span class="dot"></span>
-            <span class="dot"></span>
+            <span class="dot" :class="{'active':currentShow==='cd'}"></span>
+            <span class="dot" :class="{'active':currentShow==='lyric'}"></span>
           </div>
           <div class="progress-wrapper">
             <span class="time time-l">{{_normallizeSongInterval(currentTime)}}</span>
@@ -114,14 +119,20 @@ import { shuffle } from '@/common/js/util.js'
 import Lyric from 'lyric-parser'
 
 const transform = prefixStyle('transform')
+const transitionDuration = prefixStyle('transitionDuration')
 export default {
   data() {
     return {
       songReady: false,
       currentTime: 0,
       currentLyric: null,
-      currentLineNum: 0
+      currentLineNum: 0,
+      currentShow: 'cd',
+      lyricCurrentTxt: ''
     }
+  },
+  created() {
+    this.touch = {}
   },
   computed: {
     ...mapGetters([
@@ -167,7 +178,66 @@ export default {
       setPlayMode: 'SET_PLAY_MODE',
       setPlayList: 'SET_PLAYLIST'
     }),
-
+    middleTouchStart(e) {
+      this.touch.inited = true
+      const touch = e.touches[0]
+      this.touch.startX = touch.pageX
+      this.touch.startY = touch.pageY
+    },
+    middleTouchMove(e) {
+      if (!this.touch.inited) {
+        return
+      }
+      const touch = e.touches[0]
+      const deltaX = touch.pageX - this.touch.startX
+      const deltaY = touch.pageY - this.touch.startY
+      if (Math.abs(deltaY) > Math.abs(deltaX)) {
+        return
+      }
+      const innerWidth = window.innerWidth
+      const lyricOffsetLeft = this.currentShow === 'cd' ? 0 : -innerWidth
+      const offsetWidth = Math.min(
+        0,
+        Math.max(deltaX + lyricOffsetLeft, -innerWidth)
+      )
+      this.touch.precent = Math.abs(offsetWidth / innerWidth)
+      this.$refs.lyricList.$el.style[
+        transform
+      ] = `translate3d(${offsetWidth}px,0,0)`
+      this.$refs.lyricList.$el.style[transitionDuration] = 0
+      this.$refs.middleL.style.opacity = 1 - this.touch.precent
+      this.$refs.middleL.style[transitionDuration] = 0
+    },
+    middleTouchEnd() {
+      let offsetWidth
+      let opacity
+      const innerWidth = window.innerWidth
+      if (this.currentShow === 'cd') {
+        if (this.touch.precent > 0.1) {
+          offsetWidth = -innerWidth
+          this.currentShow = 'lyric'
+          opacity = 0
+        } else {
+          offsetWidth = 0
+          opacity = 1
+        }
+      } else {
+        if (this.touch.precent < 0.9) {
+          offsetWidth = 0
+          this.currentShow = 'cd'
+          opacity = 1
+        } else {
+          offsetWidth = -innerWidth
+          opacity = 0
+        }
+      }
+      this.$refs.lyricList.$el.style[
+        transform
+      ] = `translate3d(${offsetWidth}px,0,0)`
+      this.$refs.lyricList.$el.style[transitionDuration] = '300ms'
+      this.$refs.middleL.style[transitionDuration] = '300ms'
+      this.$refs.middleL.style.opacity = opacity
+    },
     changeMode() {
       const mode = (this.mode + 1) % 3
       this.setPlayMode(mode)
@@ -301,6 +371,7 @@ export default {
       } else {
         this.$refs.lyricList.scrollTo(0, 0, 1000)
       }
+      this.lyricCurrentTxt = txt
     },
     getLyric() {
       this.currentSong
