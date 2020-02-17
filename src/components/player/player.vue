@@ -237,6 +237,7 @@ export default {
       this.$refs.lyricList.$el.style[transitionDuration] = '300ms'
       this.$refs.middleL.style[transitionDuration] = '300ms'
       this.$refs.middleL.style.opacity = opacity
+      this.touch.inited = false
     },
     changeMode() {
       const mode = (this.mode + 1) % 3
@@ -307,15 +308,23 @@ export default {
     loop() {
       this.$refs.audio.currentTime = 0
       this.$refs.audio.play()
+      if (this.currentLyric) {
+        this.currentLyric.seek(0)
+      }
       this.setPlaying(true)
     },
     togglePlaying() {
       this.setPlaying(!this.playing)
+      this.currentLyric.togglePlay()
     },
     progressmove(precent) {
+      const currentTime = this.currentSong.interval * precent
       this.$refs.audio.currentTime = this.currentSong.interval * precent
       if (!this.playing) {
         this.togglePlaying()
+      }
+      if (this.currentLyric) {
+        this.currentLyric.seek(currentTime * 1000)
       }
     },
     back() {
@@ -386,7 +395,7 @@ export default {
           }
         })
         .catch(() => {
-          this.currentSong.lyric = ''
+          this.lyricCurrentTxt = ''
           this.currentLineNum = 0
           this.currentLyric = null
         })
@@ -428,8 +437,13 @@ export default {
       getSongVkey(newSong.mid).then(({ data }) => {
         const currentSongUrl =
           data.req_0.data.sip[0] + data.req_0.data.midurlinfo[0].purl
-        console.log(currentSongUrl)
         this.setCurrentSongUrl(currentSongUrl)
+        if (this.currentLyric) {
+          this.currentLyric.stop()
+          this.currentLineNum = 0
+          this.lyricCurrentTxt = ''
+          this.currentTime = 0
+        }
         this.$nextTick(() => {
           const audio = this.$refs.audio
           audio.play()

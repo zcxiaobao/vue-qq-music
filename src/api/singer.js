@@ -116,3 +116,21 @@ export const getSongVkey = function (songId) {
     return Promise.resolve(res)
   })
 }
+
+export const getAlbumSongList = function (albumId) {
+  const singerSongListUrl = '/getAlbumSongList'
+  const data = {
+    ...qqMusicConfigParam,
+    type: 1,
+    json: 1,
+    utf8: 1,
+    onlysong: 0,
+    new_format: 1,
+    disstid: albumId
+  }
+  return axios(singerSongListUrl, {
+    params: data
+  }).then(res => {
+    return Promise.resolve(res)
+  })
+}

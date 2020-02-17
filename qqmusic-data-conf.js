@@ -80,6 +80,18 @@ module.exports = function before(app, server, compiler) {
       })
   })
 
+  // 获取 歌单的 song-list信息
+  app.get('/getAlbumSongList', (req, res) => {
+    const albumSongListUrl = 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg'
+    sendAxiosAjax(albumSongListUrl, req.query)
+      .then(response => {
+        console.log(response)
+        return res.json(response.data)
+      })
+      .catch(e => {
+        console.log(e)
+      })
+  })
   // 获取音乐的vkey
   app.get('/getMusicVkey', (req, res) => {
     sendAxiosAjax(url, req.query)

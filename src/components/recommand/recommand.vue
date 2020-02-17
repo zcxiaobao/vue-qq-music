@@ -21,7 +21,12 @@
         <div class="recommend-list">
           <h1 class="list-title">热门歌单推荐</h1>
           <ul class="recom-wrapper">
-            <li v-for="item in recomPlayList" class="recom-item" :key="item.content_id">
+            <li
+              v-for="item in recomPlayList"
+              class="recom-item"
+              :key="item.content_id"
+              @click="selectAlbum(item)"
+            >
               <div class="icon">
                 <img v-lazy="item.cover" />
               </div>
@@ -66,6 +71,7 @@ import { createSong } from '@/common/js/song.js'
 import Slider from '@/base/slider/slider.vue'
 import Scroll from '@/base/scroll/scroll.vue'
 import Loading from '@/base/loading/loading.vue'
+import { mapMutations } from 'vuex'
 export default {
   name: 'Recommand',
   data() {
@@ -83,6 +89,16 @@ export default {
     }
   },
   methods: {
+    ...mapMutations({
+      setAlbum: 'SET_ALBUM'
+    }),
+    selectAlbum(item) {
+      console.log(item)
+      this.$router.push({
+        path: `/recommand/${item.content_id}`
+      })
+      this.setAlbum(item)
+    },
     pullingUp() {
       this._getNewSongList()
     },

@@ -25,6 +25,9 @@ const mutations = {
   },
   [types.SET_CURRENT_SONG_URL](state, url) {
     state.currentSongUrl = url
+  },
+  [types.SER_ALBUM](state, album) {
+    state.album = album
   }
 }
 

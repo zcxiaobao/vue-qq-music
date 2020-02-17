@@ -1,4 +1,6 @@
-import { playMode } from '@/common/js/config.js'
+import {
+  playMode
+} from '@/common/js/config.js'
 const state = {
   singer: {},
   // 播放器部分
@@ -8,6 +10,7 @@ const state = {
   mode: playMode.sequence,
   sequenceList: [],
   currentIndex: -1,
-  currentSongUrl: ''
+  currentSongUrl: '',
+  album: {}
 }
 export default state

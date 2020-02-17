@@ -5,6 +5,7 @@ import Recommand from '@/components/recommand/recommand.vue'
 import Rank from '@/components/rank/rank.vue'
 import Search from '@/components/search/search.vue'
 import SingerDetail from '@/components/singer-detail/singer-detail.vue'
+import AlbumDetail from '@/components/album-detail/album-detail.vue'
 const routerPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location) {
   return routerPush.call(this, location).catch(error => error)
@@ -19,7 +20,11 @@ const routes = [{
   {
     path: '/recommand',
     name: 'recommand',
-    component: Recommand
+    component: Recommand,
+    children: [{
+      path: ':id',
+      component: AlbumDetail
+    }]
   },
   {
     path: '/singer',
