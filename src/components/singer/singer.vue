@@ -1,6 +1,6 @@
 <template>
-  <div class="singer">
-    <list-view :data="singers" @selectSinger="selectSinger"></list-view>
+  <div class="singer" ref="singer">
+    <list-view :data="singers" @selectSinger="selectSinger" ref="singerList"></list-view>
     <router-view></router-view>
   </div>
 </template>
@@ -10,11 +10,13 @@ import ListView from '@/base/listview/listview.vue'
 import { getSinger, getSingerByJsonp } from '@/api/singer.js'
 import { mapMutations } from 'vuex'
 import { ERR_OK } from '@/api/config.js'
+// import { playlistMixin } from '@/common/js/mixin.js'
 import Singer from '@/common/js/singer.js'
 const HOT_SINGER_LEN = 10
 const HOT_NAME = '热门'
 export default {
   name: 'Singer',
+  // mixins: [playlistMixin],
   data() {
     return {
       singers: []
@@ -33,6 +35,11 @@ export default {
     ...mapMutations({
       setSinger: 'SET_SINGER'
     }),
+    // handlePlaylist(playlist) {
+    //   const bottom = playlist.length > 0 ? '60px' : ''
+    //   this.$refs.singer.style.bottom = bottom
+    //   this.$refs.singerList.children[0].refresh()
+    // },
     _getSinger() {
       getSingerByJsonp().then(res => {
         if (res.code === ERR_OK) {

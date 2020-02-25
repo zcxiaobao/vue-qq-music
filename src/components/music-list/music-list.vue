@@ -38,6 +38,7 @@ import SongList from '@/base/song-list/song-list.vue'
 import Loading from '@/base/loading/loading.vue'
 import { prefixStyle } from '@/common/js/dom.js'
 import { mapActions } from 'vuex'
+import { playlistMixin } from '@/common/js/mixin.js'
 const TITLE_HEIGHT = 40 // 标题高度
 const transform = prefixStyle('transform') // transform 添加css前缀
 let minTranslateY = 0 // 歌单滚动最小坐标 Y
@@ -58,6 +59,7 @@ export default {
       default: null
     }
   },
+  mixins: [playlistMixin],
   data() {
     return {
       scrollY: 0
@@ -74,6 +76,11 @@ export default {
   },
   methods: {
     ...mapActions(['selectPlay', 'randomPlay']),
+    handlePlaylist(playlist) {
+      const bottom = playlist.length > 0 ? '60px' : 0
+      this.$refs.list.$el.style.bottom = bottom
+      this.$refs.list.refresh()
+    },
     randomPlaySong() {
       this.randomPlay({ list: this.songs })
     },

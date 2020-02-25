@@ -52,6 +52,7 @@
 import Scroll from '@/base/scroll/scroll.vue'
 import Loading from '@/base/loading/loading.vue'
 import { htmlDataGetOrSet } from '@/common/js/dom.js'
+import { playlistMixin } from '@/common/js/mixin.js'
 const SHORTCUT_ITEM_LENGTH = 18
 const FIXED_TITLE_HEIGHT = 30
 export default {
@@ -61,6 +62,7 @@ export default {
       default: null
     }
   },
+  mixins: [playlistMixin],
   created() {
     this.touch = {}
     this.probeType = 3
@@ -75,6 +77,11 @@ export default {
     }
   },
   methods: {
+    handlePlaylist(playlist) {
+      const bottom = playlist.length > 0 ? '60px' : 0
+      this.$refs.listview.$el.style.bottom = bottom
+      this.$refs.listview.refresh()
+    },
     onShortcutTouchStart(e) {
       const shortcutIndex = htmlDataGetOrSet(e.target, 'index')
       this.touch.y1 = e.touches[0].pageY

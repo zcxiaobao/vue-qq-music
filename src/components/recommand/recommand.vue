@@ -72,8 +72,10 @@ import Slider from '@/base/slider/slider.vue'
 import Scroll from '@/base/scroll/scroll.vue'
 import Loading from '@/base/loading/loading.vue'
 import { mapMutations } from 'vuex'
+import { playlistMixin } from '@/common/js/mixin.js'
 export default {
   name: 'Recommand',
+  mixins: [playlistMixin],
   data() {
     return {
       sliderItems: [], // 轮播图信息
@@ -92,6 +94,11 @@ export default {
     ...mapMutations({
       setAlbum: 'SET_ALBUM'
     }),
+    handlePlaylist(playlist) {
+      const bottom = playlist.length > 0 ? '60px' : 0
+      this.$refs.recommend.style.bottom = bottom
+      this.$refs.scroll.refresh()
+    },
     selectAlbum(item) {
       console.log(item)
       this.$router.push({
