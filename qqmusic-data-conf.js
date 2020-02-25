@@ -115,4 +115,25 @@ module.exports = function before(app, server, compiler) {
         console.log(e)
       })
   })
+
+  // 获取排行榜
+  app.get('/getTopList', (req, res) => {
+    sendAxiosAjax(url, req.query)
+      .then(response => {
+        return res.json(response.data)
+      })
+      .catch(e => {
+        console.log(e)
+      })
+  })
+  // 获取排行榜歌曲
+  app.get('/getTopListSongs', (req, res) => {
+    sendAxiosAjax(url, req.query)
+      .then(response => {
+        return res.json(response.data)
+      })
+      .catch(e => {
+        console.log(e)
+      })
+  })
 }

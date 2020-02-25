@@ -11,6 +11,7 @@ const state = {
   sequenceList: [],
   currentIndex: -1,
   currentSongUrl: '',
-  album: {}
+  album: {},
+  top: {}
 }
 export default state

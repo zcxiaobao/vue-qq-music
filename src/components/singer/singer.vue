@@ -10,7 +10,6 @@ import ListView from '@/base/listview/listview.vue'
 import { getSinger, getSingerByJsonp } from '@/api/singer.js'
 import { mapMutations } from 'vuex'
 import { ERR_OK } from '@/api/config.js'
-// import { playlistMixin } from '@/common/js/mixin.js'
 import Singer from '@/common/js/singer.js'
 const HOT_SINGER_LEN = 10
 const HOT_NAME = '热门'

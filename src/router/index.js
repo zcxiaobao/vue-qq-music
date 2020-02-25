@@ -6,6 +6,7 @@ import Rank from '@/components/rank/rank.vue'
 import Search from '@/components/search/search.vue'
 import SingerDetail from '@/components/singer-detail/singer-detail.vue'
 import AlbumDetail from '@/components/album-detail/album-detail.vue'
+import TopList from '@/components/top-list/top-list.vue'
 const routerPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location) {
   return routerPush.call(this, location).catch(error => error)
@@ -43,7 +44,11 @@ const routes = [{
   {
     path: '/rank',
     name: 'rank',
-    component: Rank
+    component: Rank,
+    children: [{
+      path: ':id',
+      component: TopList
+    }]
   },
   {
     path: '/search',
