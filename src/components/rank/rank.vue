@@ -14,9 +14,9 @@
           </ul>
         </li>
       </ul>
-      <!-- <div class="loading-container">
+      <div class="loading-container" v-show="!toplist.length">
         <loading></loading>
-      </div>-->
+      </div>
     </scroll>
     <router-view></router-view>
   </div>
@@ -26,8 +26,10 @@
 import { getTopList } from '@/api/rank.js'
 import { ERR_OK } from '@/api/config.js'
 import { mapMutations } from 'vuex'
+import { playlistMixin } from '@/common/js/mixin.js'
 import Scroll from '@/base/scroll/scroll.vue'
 export default {
+  mixins: [playlistMixin],
   data() {
     return {
       toplist: []
@@ -40,13 +42,17 @@ export default {
     ...mapMutations({
       setTop: 'SET_TOP'
     }),
+    handlePlaylist(playlist) {
+      const bottom = playlist.length > 0 ? '60px' : 0
+      this.$refs.rank.style.bottom = bottom
+      this.$refs.toplist.refresh()
+    },
     selectItem(top) {
       this.$router.push(`/rank/${top.topId}`)
       this.setTop(top)
     },
     _getTopList() {
       getTopList().then(({ data }) => {
-        console.log(data.code, data.toplist)
         if (data.code === ERR_OK) {
           const { data: toplist } = data.toplist
           this.toplist = [

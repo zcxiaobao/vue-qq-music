@@ -23,7 +23,7 @@
       ref="list"
     >
       <div class="song-list-wrapper">
-        <song-list :songs="songs" @select="selectSong" />
+        <song-list :songs="songs" :rank="rank" @select="selectSong" />
       </div>
       <div class="loading-container" v-show="!songs || !songs.length">
         <loading />
@@ -57,6 +57,10 @@ export default {
     songs: {
       type: Array,
       default: null
+    },
+    rank: {
+      type: Boolean,
+      default: false
     }
   },
   mixins: [playlistMixin],
