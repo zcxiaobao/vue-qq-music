@@ -1,12 +1,13 @@
 const axios = require('axios')
+const headers = {
+  origin: 'https://y.qq.com/',
+  'sec-fetch-site': 'same-site',
+  'access-control-allow-origin': 'https://y.qq.com',
+  'access-control-expose-headers': 'Area',
+  referer: 'https://c.y.qq.com/'
+}
 const vueAxios = axios.create({
-  headers: {
-    origin: 'https://y.qq.com/',
-    'sec-fetch-site': 'same-site',
-    'access-control-allow-origin': 'https://y.qq.com',
-    'access-control-expose-headers': 'Area',
-    referer: 'https://c.y.qq.com/'
-  },
+  headers,
   timeout: 3000
 })
 
@@ -48,10 +49,7 @@ module.exports = function before(app, server, compiler) {
   app.get('/getNewSongList', (req, res) => {
     sendAxiosAjax(url, req.query)
       .then(response => {
-        const {
-          pi,
-          ps
-        } = JSON.parse(req.query.data).new_song.songlistPage
+        const { pi, ps } = JSON.parse(req.query.data).new_song.songlistPage
         const s = (pi - 1) * ps
         const e = pi * ps
         const newSongList = response.data.new_song.data.songlist.slice(s, e)
@@ -82,7 +80,8 @@ module.exports = function before(app, server, compiler) {
 
   // 获取 歌单的 song-list信息
   app.get('/getAlbumSongList', (req, res) => {
-    const albumSongListUrl = 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg'
+    const albumSongListUrl =
+      'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg'
     sendAxiosAjax(albumSongListUrl, req.query)
       .then(response => {
         console.log(response)
@@ -129,6 +128,41 @@ module.exports = function before(app, server, compiler) {
   // 获取排行榜歌曲
   app.get('/getTopListSongs', (req, res) => {
     sendAxiosAjax(url, req.query)
+      .then(response => {
+        return res.json(response.data)
+      })
+      .catch(e => {
+        console.log(e)
+      })
+  })
+
+  // 获取搜索热词
+  app.get('/getHotSearchKeys', (req, res) => {
+    const url = 'https://c.y.qq.com/splcloud/fcgi-bin/gethotkey.fcg'
+    sendAxiosAjax(url, req.query)
+      .then(response => {
+        return res.json(response.data)
+      })
+      .catch(e => {
+        console.log(e)
+      })
+  })
+
+  // 搜素歌曲或者歌手
+  app.get('/getSearchSongList', (req, res) => {
+    const url = 'https://c.y.qq.com/soso/fcgi-bin/client_search_cp'
+
+    axios
+      .get(url, {
+        params: req.query,
+        headers: {
+          origin: 'https://y.qq.com',
+          referer: 'https://y.qq.com/portal/search.html',
+          'sec-fetch-dest': 'empty',
+          'sec-fetch-mode': 'cors',
+          'sec-fetch-site': 'same-site'
+        }
+      })
       .then(response => {
         return res.json(response.data)
       })

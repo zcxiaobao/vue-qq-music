@@ -27,6 +27,7 @@ import { getTopList } from '@/api/rank.js'
 import { ERR_OK } from '@/api/config.js'
 import { mapMutations } from 'vuex'
 import { playlistMixin } from '@/common/js/mixin.js'
+import Loading from '@/base/loading/loading.vue'
 import Scroll from '@/base/scroll/scroll.vue'
 export default {
   mixins: [playlistMixin],
@@ -64,7 +65,8 @@ export default {
     }
   },
   components: {
-    Scroll
+    Scroll,
+    Loading
   }
 }
 </script>
