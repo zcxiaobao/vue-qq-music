@@ -30,7 +30,8 @@ import Loading from '@/base/loading/loading.vue'
 import Scroll from '@/base/scroll/scroll.vue'
 import { ERR_OK } from '@/api/config.js'
 import { createSong } from '@/common/js/song.js'
-
+import { mapMutations } from 'vuex'
+import Singer from '@/common/js/singer.js'
 const PERPAGE = 20
 const SINGER = 'SINGER'
 export default {
@@ -52,6 +53,9 @@ export default {
     }
   },
   methods: {
+    ...mapMutations({
+      setSinger: 'SET_SINGER'
+    }),
     search() {
       this.hasMore = true
       this.page = 1
@@ -71,6 +75,19 @@ export default {
           this._checkMore(data.data)
         }
       })
+    },
+    selectItem(song) {
+      console.log(song)
+      if (song.type === SINGER) {
+        const singer = new Singer({
+          id: song.singerMID,
+          name: song.singerName
+        })
+        this.$router.push({
+          path: `/search/${song.singerID}`
+        })
+        this.setSinger(singer)
+      }
     },
     getIconCls(song) {
       if (song.type === SINGER) {
