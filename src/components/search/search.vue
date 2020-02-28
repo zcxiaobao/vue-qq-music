@@ -27,7 +27,7 @@
       </div>
     </div>
     <div class="search-result" ref="searchResult" v-show="query">
-      <!-- <suggest @listScroll="blurInput" @select="saveSearch" ref="suggest" :query="query"></suggest> -->
+      <suggest ref="suggest" :query="query"></suggest>
     </div>
     <!-- <confirm ref="confirm" @confirm="clearSearchHistory" text="是否清空所有搜索历史" confirmBtnText="清空"></confirm> -->
     <router-view></router-view>
@@ -36,14 +36,14 @@
 
 <script>
 import SearchBox from '@/base/search-box/search-box.vue'
-import { getHotSearchKeys, getSearchSongList } from '@/api/search.js'
+import Suggest from '@/components/suggest/suggest.vue'
+import { getHotSearchKeys } from '@/api/search.js'
 import { ERR_OK } from '@/api/config.js'
 export default {
   data() {
     return {
       hotKeys: [],
-      query: '',
-      page: 1
+      query: ''
     }
   },
   created() {
@@ -53,13 +53,7 @@ export default {
     queryChange(newQ) {
       this.query = newQ
     },
-    search() {
-      getSearchSongList(this.query, this.page, 10).then(res => {
-        console.log(res)
-      })
-    },
     addQuery(query) {
-      console.log(query)
       this.$refs.searchBox.setQuery(query)
     },
     _getHotSearchKeys() {
@@ -70,13 +64,9 @@ export default {
       })
     }
   },
-  watch: {
-    query(newQ) {
-      this.search()
-    }
-  },
   components: {
-    SearchBox
+    SearchBox,
+    Suggest
   }
 }
 </script>
