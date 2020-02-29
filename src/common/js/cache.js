@@ -48,6 +48,11 @@ export const delSearch = query => {
   storage.set(SEARCH_KEY, searchHisList)
   return searchHisList
 }
+
+export const clearSearch = () => {
+  storage.removeItem(SEARCH_KEY)
+  return []
+}
 // import storage from 'good-storage'
 
 // const SEARCH_KEY = '__search__'
