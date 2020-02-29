@@ -93,6 +93,7 @@ export default {
       } else {
         this.insertSong(song)
       }
+      this.$emit('select', this.query)
     },
     getIconCls(song) {
       if (song.type === SINGER) {

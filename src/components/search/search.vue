@@ -14,20 +14,24 @@
               </li>
             </ul>
           </div>
-          <!-- <div class="search-history" >
+          <div class="search-history" v-show="searchHistoryList.length">
             <h1 class="title">
               <span class="text">搜索历史</span>
-              <span @click="showConfirm" class="clear">
+              <span class="clear">
                 <i class="icon-clear"></i>
               </span>
             </h1>
-            <search-list @delete="deleteSearchHistory" @select="addQuery" :searches="searchHistory"></search-list>
-          </div>-->
+            <search-list
+              @select-search="addQuery"
+              @del-search="delSearchHistory"
+              :searchHisList="searchHistoryList"
+            ></search-list>
+          </div>
         </div>
       </div>
     </div>
     <div class="search-result" ref="searchResult" v-show="query">
-      <suggest ref="suggest" :query="query"></suggest>
+      <suggest ref="suggest" :query="query" @select="saveSearchHistory"></suggest>
     </div>
     <!-- <confirm ref="confirm" @confirm="clearSearchHistory" text="是否清空所有搜索历史" confirmBtnText="清空"></confirm> -->
     <router-view></router-view>
@@ -37,8 +41,10 @@
 <script>
 import SearchBox from '@/base/search-box/search-box.vue'
 import Suggest from '@/components/suggest/suggest.vue'
+import SearchList from '@/base/search-list/search-list.vue'
 import { getHotSearchKeys } from '@/api/search.js'
 import { ERR_OK } from '@/api/config.js'
+import { mapActions, mapGetters } from 'vuex'
 export default {
   data() {
     return {
@@ -49,7 +55,11 @@ export default {
   created() {
     this._getHotSearchKeys()
   },
+  computed: {
+    ...mapGetters(['searchHistoryList'])
+  },
   methods: {
+    ...mapActions(['saveSearchHistory', 'delSearchHistory']),
     queryChange(newQ) {
       this.query = newQ
     },
@@ -66,7 +76,8 @@ export default {
   },
   components: {
     SearchBox,
-    Suggest
+    Suggest,
+    SearchList
   }
 }
 </script>
