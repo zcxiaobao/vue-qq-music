@@ -17,19 +17,20 @@
         </div>
       </li>
       <loading v-show="hasMore" title="加载歌曲中"></loading>
-      <p class="suggest-bottom" v-show="!hasMore">我也是有底线的</p>
+      <p class="suggest-bottom" v-show="!hasMore && resultList.length">我也是有底线的</p>
     </ul>
-    <!-- <div class="no-result-wrapper">
+    <div class="no-result-wrapper" v-show="!hasMore && !resultList.length">
       <no-result title="抱歉，暂无搜索结果"></no-result>
-    </div>-->
+    </div>
   </scroll>
 </template>
 
 <script>
-import { getSearchSongList } from '@/api/search.js'
 import Loading from '@/base/loading/loading.vue'
+import NoResult from '@/base/no-result/no-result.vue'
 import Scroll from '@/base/scroll/scroll.vue'
 import { ERR_OK } from '@/api/config.js'
+import { getSearchSongList } from '@/api/search.js'
 import { createSong } from '@/common/js/song.js'
 import { mapMutations, mapActions } from 'vuex'
 import Singer from '@/common/js/singer.js'
@@ -64,6 +65,7 @@ export default {
       getSearchSongList(this.query, this.page, PERPAGE).then(({ data }) => {
         if (data.code === ERR_OK) {
           this.resultList = this._genResult(data.data)
+          this._checkMore(data.data)
         }
       })
     },
@@ -107,6 +109,7 @@ export default {
       }
     },
     _checkMore(data) {
+      console.log(data.song)
       const song = data.song
       if (
         !song.list.length ||
@@ -146,7 +149,8 @@ export default {
   },
   components: {
     Scroll,
-    Loading
+    Loading,
+    NoResult
   }
 }
 </script>
