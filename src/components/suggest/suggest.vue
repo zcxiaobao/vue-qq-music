@@ -17,6 +17,7 @@
         </div>
       </li>
       <loading v-show="hasMore" title="加载歌曲中"></loading>
+      <p class="suggest-bottom" v-show="!hasMore">我也是有底线的</p>
     </ul>
     <!-- <div class="no-result-wrapper">
       <no-result title="抱歉，暂无搜索结果"></no-result>
@@ -30,7 +31,7 @@ import Loading from '@/base/loading/loading.vue'
 import Scroll from '@/base/scroll/scroll.vue'
 import { ERR_OK } from '@/api/config.js'
 import { createSong } from '@/common/js/song.js'
-import { mapMutations } from 'vuex'
+import { mapMutations, mapActions } from 'vuex'
 import Singer from '@/common/js/singer.js'
 const PERPAGE = 20
 const SINGER = 'SINGER'
@@ -56,6 +57,7 @@ export default {
     ...mapMutations({
       setSinger: 'SET_SINGER'
     }),
+    ...mapActions(['insertSong']),
     search() {
       this.hasMore = true
       this.page = 1
@@ -77,7 +79,6 @@ export default {
       })
     },
     selectItem(song) {
-      console.log(song)
       if (song.type === SINGER) {
         const singer = new Singer({
           id: song.singerMID,
@@ -87,6 +88,8 @@ export default {
           path: `/search/${song.singerID}`
         })
         this.setSinger(singer)
+      } else {
+        this.insertSong(song)
       }
     },
     getIconCls(song) {
@@ -185,6 +188,13 @@ export default {
         .no-wrap();
       }
     }
+  }
+  .suggest-bottom {
+    text-align: center;
+    color: @color-text-d;
+    font-size: @font-size-medium;
+    height: 40px;
+    line-height: 40px;
   }
 
   .no-result-wrapper {

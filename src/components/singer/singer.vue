@@ -9,13 +9,14 @@
 import ListView from '@/base/listview/listview.vue'
 import { getSinger, getSingerByJsonp } from '@/api/singer.js'
 import { mapMutations } from 'vuex'
+import { playlistMixin } from '@/common/js/mixin.js'
 import { ERR_OK } from '@/api/config.js'
 import Singer from '@/common/js/singer.js'
 const HOT_SINGER_LEN = 10
 const HOT_NAME = '热门'
 export default {
   name: 'Singer',
-  // mixins: [playlistMixin],
+  mixins: [playlistMixin],
   data() {
     return {
       singers: []
@@ -34,11 +35,11 @@ export default {
     ...mapMutations({
       setSinger: 'SET_SINGER'
     }),
-    // handlePlaylist(playlist) {
-    //   const bottom = playlist.length > 0 ? '60px' : ''
-    //   this.$refs.singer.style.bottom = bottom
-    //   this.$refs.singerList.children[0].refresh()
-    // },
+    handlePlaylist(playlist) {
+      const bottom = playlist.length > 0 ? '60px' : 0
+      this.$refs.singer.style.bottom = bottom
+      this.$refs.singerList.refresh()
+    },
     _getSinger() {
       getSingerByJsonp().then(res => {
         if (res.code === ERR_OK) {
