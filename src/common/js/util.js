@@ -1,4 +1,4 @@
-export const shuffle = function (arr) {
+export const shuffle = function(arr) {
   let _arr = [...arr]
   console.log(arr)
   for (let i = _arr.length; i; i--) {
@@ -9,6 +9,18 @@ export const shuffle = function (arr) {
   }
   console.log(_arr)
   return _arr
+}
+
+export const debounce = function(func, delay) {
+  let timer
+  return function(...arg) {
+    if (timer) {
+      clearTimeout(timer)
+    }
+    timer = setTimeout(() => {
+      func.apply(this, arg)
+    }, delay)
+  }
 }
 
 // function getRandomInt(min, max) {
