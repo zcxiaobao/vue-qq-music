@@ -118,11 +118,13 @@ import { prefixStyle } from '@/common/js/dom.js'
 import { playMode } from '@/common/js/config.js'
 import animations from 'create-keyframe-animation'
 import { shuffle } from '@/common/js/util.js'
+import { playerMixin } from '@/common/js/mixin.js'
 import Lyric from 'lyric-parser'
 
 const transform = prefixStyle('transform')
 const transitionDuration = prefixStyle('transitionDuration')
 export default {
+  mixins: [playerMixin],
   data() {
     return {
       songReady: false,
@@ -139,13 +141,13 @@ export default {
   computed: {
     ...mapGetters([
       'fullScreen',
-      'currentSong',
-      'playlist',
+      // 'currentSong',
+      // 'playlist',
       'playing',
       'currentSongUrl',
-      'currentIndex',
-      'mode',
-      'sequenceList'
+      'currentIndex'
+      // 'mode',
+      // 'sequenceList'
     ]),
 
     playIcon() {
@@ -162,23 +164,23 @@ export default {
     },
     precent() {
       return this.currentTime / this.currentSong.interval
-    },
-    iconMode() {
-      return this.mode === playMode.sequence
-        ? 'icon-sequence'
-        : this.mode === playMode.loop
-        ? 'icon-loop'
-        : 'icon-random'
     }
+    // iconMode() {
+    //   return this.mode === playMode.sequence
+    //     ? 'icon-sequence'
+    //     : this.mode === playMode.loop
+    //     ? 'icon-loop'
+    //     : 'icon-random'
+    // }
   },
   methods: {
     ...mapMutations({
       setFullScreen: 'SET_FULL_SCREEN',
       setCurrentSongUrl: 'SET_CURRENT_SONG_URL',
-      setPlaying: 'SET_PLAYING_STATE',
-      setCurrentIndex: 'SET_CURRENT_INDEX',
-      setPlayMode: 'SET_PLAY_MODE',
-      setPlayList: 'SET_PLAYLIST'
+      setPlaying: 'SET_PLAYING_STATE'
+      // setCurrentIndex: 'SET_CURRENT_INDEX',
+      // setPlayMode: 'SET_PLAY_MODE',
+      // setPlayList: 'SET_PLAYLIST'
     }),
     showPlaylist() {
       this.$refs.playlist.show()
@@ -244,21 +246,21 @@ export default {
       this.$refs.middleL.style.opacity = opacity
       this.touch.inited = false
     },
-    changeMode() {
-      const mode = (this.mode + 1) % 3
-      this.setPlayMode(mode)
-      let songList = null
-      if (mode === playMode.random) {
-        songList = shuffle(this.playlist)
-      } else {
-        songList = this.sequenceList
-      }
-      const nowSongIndex = songList.findIndex(song => {
-        return song.id === this.currentSong.id
-      })
-      this.setCurrentIndex(nowSongIndex)
-      this.setPlayList(songList)
-    },
+    // changeMode() {
+    //   const mode = (this.mode + 1) % 3
+    //   this.setPlayMode(mode)
+    //   let songList = null
+    //   if (mode === playMode.random) {
+    //     songList = shuffle(this.playlist)
+    //   } else {
+    //     songList = this.sequenceList
+    //   }
+    //   const nowSongIndex = songList.findIndex(song => {
+    //     return song.id === this.currentSong.id
+    //   })
+    //   this.setCurrentIndex(nowSongIndex)
+    //   this.setPlayList(songList)
+    // },
     open() {
       this.setFullScreen(true)
     },

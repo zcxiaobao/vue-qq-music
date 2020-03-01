@@ -1,11 +1,9 @@
-import {
-  mapGetters
-} from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
+import { playMode } from './config'
+import { shuffle } from './util'
 export const playlistMixin = {
   computed: {
-    ...mapGetters([
-      'playlist'
-    ])
+    ...mapGetters(['playlist'])
   },
   mounted() {
     this.handlePlaylist(this.playlist)
@@ -24,27 +22,42 @@ export const playlistMixin = {
     }
   }
 }
-// export const playerMixin = {
-//   computed: {
-//     ...mapGetters(['playlist'])
-//   },
-//   created() {
-//     this.handlePlaylist(this.playlist)
-//   },
-//   activated() {
-//     this.handlePlaylist(this.playlist)
-//   },
-//   watch: {
-//     playlist(newPlayList) {
-//       this.handlePlaylist(newPlayList)
-//     }
-//   },
-//   methods: {
-//     handlePlaylist(playlist) {
-//       throw new Error('component must implement handlePlaylist method')
-//     }
-//   }
-// }
+
+export const playerMixin = {
+  computed: {
+    ...mapGetters(['mode', 'sequenceList', 'playlist', 'currentSong']),
+    iconMode() {
+      return this.mode === playMode.sequence
+        ? 'icon-sequence'
+        : this.mode === playMode.loop
+        ? 'icon-loop'
+        : 'icon-random'
+    }
+  },
+  methods: {
+    ...mapMutations({
+      setPlaying: 'SET_PLAYING_STATE',
+      setCurrentIndex: 'SET_CURRENT_INDEX',
+      setPlayMode: 'SET_PLAY_MODE',
+      setPlayList: 'SET_PLAYLIST'
+    }),
+    changeMode() {
+      const mode = (this.mode + 1) % 3
+      this.setPlayMode(mode)
+      let songList = null
+      if (mode === playMode.random) {
+        songList = shuffle(this.playlist)
+      } else {
+        songList = this.sequenceList
+      }
+      const nowSongIndex = songList.findIndex(song => {
+        return song.id === this.currentSong.id
+      })
+      this.setCurrentIndex(nowSongIndex)
+      this.setPlayList(songList)
+    }
+  }
+}
 
 // import {
 //   mapGetters,

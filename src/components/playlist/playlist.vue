@@ -4,8 +4,8 @@
       <div class="list-wrapper" @click.stop>
         <div class="list-header">
           <h1 class="title">
-            <i class="icon"></i>
-            <span class="text"></span>
+            <i class="icon" :class="iconMode" @click="changeMode"></i>
+            <span class="text">{{modeText}}</span>
             <span class="clear" @click.stop="clearSongs()">
               <i class="icon-clear"></i>
             </span>
@@ -52,27 +52,25 @@ import Scroll from '@/base/scroll/scroll'
 import Confirm from '@/base/confirm/confirm'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { playMode } from '@/common/js/config.js'
+import { playerMixin } from '@/common/js/mixin.js'
 export default {
+  mixins: [playerMixin],
   data() {
     return {
       showFlag: false
     }
   },
   computed: {
-    ...mapGetters([
-      'mode',
-      'sequenceList',
-      'currentIndex',
-      'currentSong',
-      'playlist'
-    ])
+    modeText() {
+      return this.mode === playMode.sequence
+        ? '顺序播放'
+        : this.mode === playMode.random
+        ? '随机播放'
+        : '单曲循环'
+    }
   },
   methods: {
     ...mapActions(['deleteSong', 'clearPlaylist']),
-    ...mapMutations({
-      setCurrentIndex: 'SET_CURRENT_INDEX',
-      setPlayingState: 'SET_PLAYING_STATE'
-    }),
     show() {
       this.showFlag = true
       setTimeout(() => {
@@ -101,7 +99,7 @@ export default {
         index = this.playlist.findIndex(s => s.id === song.id)
       }
       this.setCurrentIndex(index)
-      this.setPlayingState(true)
+      this.setPlaying(true)
     },
     scrollToSong(song) {
       const index = this.sequenceList.findIndex(s => s.id === song.id)
