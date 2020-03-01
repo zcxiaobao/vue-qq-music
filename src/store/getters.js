@@ -9,7 +9,7 @@ export const mode = state => state.mode
 export const currentIndex = state => state.currentIndex
 export const currentSongUrl = state => state.currentSongUrl
 export const currentSong = state => {
-  return state.playlist[state.currentIndex] || {}
+  return (state.playlist && state.playlist[state.currentIndex]) || {}
 }
 
 export const album = state => state.album

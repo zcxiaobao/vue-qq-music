@@ -6,13 +6,13 @@
           <h1 class="title">
             <i class="icon"></i>
             <span class="text"></span>
-            <span class="clear">
+            <span class="clear" @click.stop="clearSongs()">
               <i class="icon-clear"></i>
             </span>
           </h1>
         </div>
         <scroll ref="listContent" class="list-content" :data="sequenceList">
-          <ul ref="list" name="list" v-show="sequenceList.length">
+          <transition-group ref="list" name="list" v-show="sequenceList.length" tag="ul">
             <li
               class="item"
               v-for="(song,index) in sequenceList"
@@ -25,11 +25,11 @@
               <span class="like">
                 <i class="icon-not-favorite"></i>
               </span>
-              <span class="delete">
+              <span class="delete" @click.stop="delSong(song)">
                 <i class="icon-delete"></i>
               </span>
             </li>
-          </ul>
+          </transition-group>
         </scroll>
         <div class="list-operate">
           <div class="add">
@@ -41,7 +41,7 @@
           <span>关闭</span>
         </div>
       </div>
-      <!-- <confirm ref="confirm" @confirm="confirmClear" text="是否清空播放列表" confirmBtnText="清空"></confirm> -->
+      <confirm ref="confirm" @confirm="confirmClear" text="是否清空播放列表" confirmBtnText="清空"></confirm>
       <!-- <add-song ref="addSong"></add-song> -->
     </div>
   </transition>
@@ -49,7 +49,8 @@
 
 <script>
 import Scroll from '@/base/scroll/scroll'
-import { mapGetters, mapMutations } from 'vuex'
+import Confirm from '@/base/confirm/confirm'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { playMode } from '@/common/js/config.js'
 export default {
   data() {
@@ -67,6 +68,7 @@ export default {
     ])
   },
   methods: {
+    ...mapActions(['deleteSong', 'clearPlaylist']),
     ...mapMutations({
       setCurrentIndex: 'SET_CURRENT_INDEX',
       setPlayingState: 'SET_PLAYING_STATE'
@@ -75,10 +77,24 @@ export default {
       this.showFlag = true
       setTimeout(() => {
         this.$refs.listContent.refresh()
+        this.scrollToSong(this.currentSong)
       }, 20)
     },
     hide() {
       this.showFlag = false
+    },
+    delSong(song) {
+      this.deleteSong(song)
+      if (!this.playlist.length) {
+        this.hide()
+      }
+    },
+    clearSongs() {
+      this.$refs.confirm.show()
+    },
+    confirmClear() {
+      this.clearPlaylist()
+      this.$refs.confirm.hide()
     },
     selectSong(song, index) {
       if (this.mode === playMode.random) {
@@ -89,10 +105,16 @@ export default {
     },
     scrollToSong(song) {
       const index = this.sequenceList.findIndex(s => s.id === song.id)
-      this.$refs.listContent.scrollToElement(this.$refs.song[index], 300)
+      this.$refs.listContent.scrollToElement(
+        this.$refs.list.$el.children[index],
+        300
+      )
+      // console.log(this.$refs.list.$el.children)
+      // console.log(this.$refs.song)
+      // this.$refs.listContent.scrollToElement(this.$refs.song[index], 300)
     },
     getCurrentIcon(song) {
-      if (!this.showFlag || this.currentSong.id === song.id) {
+      if (this.currentSong.id === song.id) {
         return 'icon-play'
       }
       return ''
@@ -100,14 +122,17 @@ export default {
   },
   watch: {
     currentSong(newSong, oldSong) {
-      if (newSong.id === oldSong.id) {
+      if (!this.showFlag || newSong.id === oldSong.id) {
         return
       }
-      this.scrollToSong(newSong)
+      setTimeout(() => {
+        this.scrollToSong(newSong)
+      }, 20)
     }
   },
   components: {
-    Scroll
+    Scroll,
+    Confirm
   }
 }
 </script>

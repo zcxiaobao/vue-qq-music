@@ -81,7 +81,7 @@
       </div>
     </transition>
     <transition name="mini">
-      <div class="mini-player" v-show="!fullScreen" @click="open">
+      <div class="mini-player" v-show="!fullScreen" @click.stop="open">
         <div class="icon">
           <img width="40" height="40" :src="currentSong.image" />
         </div>
@@ -439,6 +439,9 @@ export default {
       })
     },
     currentSong(newSong, oldSong) {
+      if (!newSong) {
+        return
+      }
       if (newSong.id === oldSong.id) {
         return
       }
@@ -454,7 +457,7 @@ export default {
         }
         this.$nextTick(() => {
           const audio = this.$refs.audio
-          audio.play()
+          this.playing ? audio.play() : audio.pause()
           this.getLyric()
         })
       })
