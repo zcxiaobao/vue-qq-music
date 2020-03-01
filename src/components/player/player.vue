@@ -92,11 +92,12 @@
         <div class="control">
           <i @click="togglePlaying" class="icon-mini" :class="playMiniIcon"></i>
         </div>
-        <div class="control">
+        <div class="control" @click.stop="showPlaylist">
           <i class="icon-playlist"></i>
         </div>
       </div>
     </transition>
+    <playlist ref="playlist"></playlist>
     <audio
       ref="audio"
       :src="currentSongUrl"
@@ -110,6 +111,7 @@
 <script>
 import ProgressBar from '@/base/progress-bar/progress-bar.vue'
 import Scroll from '@/base/scroll/scroll.vue'
+import Playlist from '@/components/playlist/playlist.vue'
 import { mapGetters, mapMutations } from 'vuex'
 import { getSongVkey } from '@/api/singer.js'
 import { prefixStyle } from '@/common/js/dom.js'
@@ -178,6 +180,9 @@ export default {
       setPlayMode: 'SET_PLAY_MODE',
       setPlayList: 'SET_PLAYLIST'
     }),
+    showPlaylist() {
+      this.$refs.playlist.show()
+    },
     middleTouchStart(e) {
       this.touch.inited = true
       const touch = e.touches[0]
@@ -434,6 +439,9 @@ export default {
       })
     },
     currentSong(newSong, oldSong) {
+      if (newSong.id === oldSong.id) {
+        return
+      }
       getSongVkey(newSong.mid).then(({ data }) => {
         const currentSongUrl =
           data.req_0.data.sip[0] + data.req_0.data.midurlinfo[0].purl
@@ -454,7 +462,8 @@ export default {
   },
   components: {
     ProgressBar,
-    Scroll
+    Scroll,
+    Playlist
   }
 }
 </script>
