@@ -93,6 +93,9 @@ export default {
     scroll(pos) {
       this.scrollY = pos.y
     },
+    refresh() {
+      this.$refs.listview.refresh()
+    },
     selectSinger(singer) {
       this.$emit('selectSinger', singer)
     },
