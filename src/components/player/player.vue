@@ -101,7 +101,7 @@
     <audio
       ref="audio"
       :src="currentSongUrl"
-      @canplay="play"
+      @play="play"
       @timeupdate="updateCreateTime"
       @ended="audioEnd"
     ></audio>
@@ -112,7 +112,7 @@
 import ProgressBar from '@/base/progress-bar/progress-bar.vue'
 import Scroll from '@/base/scroll/scroll.vue'
 import Playlist from '@/components/playlist/playlist.vue'
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { getSongVkey } from '@/api/singer.js'
 import { prefixStyle } from '@/common/js/dom.js'
 import { playMode } from '@/common/js/config.js'
@@ -174,6 +174,7 @@ export default {
     // }
   },
   methods: {
+    ...mapActions(['saveLaterPlayList']),
     ...mapMutations({
       setFullScreen: 'SET_FULL_SCREEN',
       setCurrentSongUrl: 'SET_CURRENT_SONG_URL',
@@ -304,6 +305,8 @@ export default {
     },
     play() {
       this.songReady = true
+      console.log(111)
+      this.saveLaterPlayList(this.currentSong)
     },
     audioEnd() {
       if (this.mode === playMode.loop) {

@@ -34,6 +34,9 @@ const mutations = {
   },
   [types.SET_SEARCH_HIS_LIST](state, searchHisList) {
     state.searchHistoryList = searchHisList
+  },
+  [types.SET_LATER_PLAY_LIST](state, laterPlayList) {
+    state.laterPlayList = laterPlayList
   }
 }
 

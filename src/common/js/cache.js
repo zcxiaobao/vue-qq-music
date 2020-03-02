@@ -2,6 +2,9 @@ import storage from './local-storage.js'
 const SEARCH_KEY = '__search__'
 const SEARCH_MAX_LEN = 15
 
+const LATER_PLAYLIST_KEY = '__laterPlaylist__'
+const LATER_MAX_LEN = 200
+
 function insertArray(arr, val, compare, maxLen) {
   const index = arr.findIndex(compare)
   if (index === 0) {
@@ -52,6 +55,33 @@ export const delSearch = query => {
 export const clearSearch = () => {
   storage.removeItem(SEARCH_KEY)
   return []
+}
+
+export const loadLaterPlayList = () => {
+  return storage.get(LATER_PLAYLIST_KEY, [])
+}
+
+export const saveLaterPlay = function(song) {
+  let laterPlayList = storage.get(LATER_PLAYLIST_KEY, [])
+  insertArray(
+    laterPlayList,
+    song,
+    s => {
+      return s.id === song.id
+    },
+    LATER_MAX_LEN
+  )
+  storage.set(LATER_PLAYLIST_KEY, laterPlayList)
+  return laterPlayList
+}
+
+export const delLaterPlay = song => {
+  let laterPlayList = storage.get(LATER_PLAYLIST_KEY, [])
+  delArrayItem(laterPlayList, s => {
+    return s.id === song.id
+  })
+  storage.set(LATER_PLAYLIST_KEY, laterPlayList)
+  return laterPlayList
 }
 // import storage from 'good-storage'
 

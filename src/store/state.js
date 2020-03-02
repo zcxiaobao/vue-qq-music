@@ -1,5 +1,5 @@
 import { playMode } from '@/common/js/config.js'
-import { loadSearchHis } from '@/common/js/cache.js'
+import { loadSearchHis, loadLaterPlayList } from '@/common/js/cache.js'
 const state = {
   singer: {},
   // 播放器部分
@@ -12,6 +12,7 @@ const state = {
   currentSongUrl: '',
   album: {},
   top: {},
-  searchHistoryList: loadSearchHis()
+  searchHistoryList: loadSearchHis(),
+  laterPlayList: loadLaterPlayList()
 }
 export default state

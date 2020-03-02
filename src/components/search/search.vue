@@ -47,28 +47,28 @@ import Scroll from '@/base/scroll/scroll.vue'
 import { getHotSearchKeys } from '@/api/search.js'
 import { ERR_OK } from '@/api/config.js'
 import { mapActions, mapGetters } from 'vuex'
-import { playlistMixin } from '@/common/js/mixin.js'
+import { playlistMixin, serachMixin } from '@/common/js/mixin.js'
 export default {
-  mixins: [playlistMixin],
+  mixins: [playlistMixin, serachMixin],
   data() {
     return {
-      hotKeys: [],
-      query: ''
+      hotKeys: []
+      // query: ''
     }
   },
   created() {
     this._getHotSearchKeys()
   },
   computed: {
-    ...mapGetters(['searchHistoryList']),
+    // ...mapGetters(['searchHistoryList']),
     shortcut() {
       return [...this.hotKeys, ...this.searchHistoryList]
     }
   },
   methods: {
     ...mapActions([
-      'saveSearchHistory',
-      'delSearchHistory',
+      // 'saveSearchHistory',
+      // 'delSearchHistory',
       'clearSearchHistory'
     ]),
     handlePlaylist(playlist) {
@@ -78,15 +78,15 @@ export default {
       this.$refs.searchResult.style.bottom = bottom
       this.$refs.suggest.refresh()
     },
-    queryChange(newQ) {
-      this.query = newQ
-    },
+    // queryChange(newQ) {
+    //   this.query = newQ
+    // },
     clearSearchHis() {
       this.$refs.confirm.show()
     },
-    addQuery(query) {
-      this.$refs.searchBox.setQuery(query)
-    },
+    // addQuery(query) {
+    //   this.$refs.searchBox.setQuery(query)
+    // },
     _getHotSearchKeys() {
       getHotSearchKeys().then(({ data }) => {
         if (data.code === ERR_OK) {

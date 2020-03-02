@@ -1,23 +1,9 @@
-import {
-  getLyric
-} from '@/api/song.js'
-import {
-  ERR_OK
-} from '@/api/config.js'
-import {
-  Base64
-} from 'js-base64'
+import { getLyric } from '@/api/song.js'
+import { ERR_OK } from '@/api/config.js'
+import { Base64 } from 'js-base64'
 
-class Song {
-  constructor({
-    id,
-    name,
-    mid,
-    singer,
-    album,
-    image,
-    interval
-  }) {
+export class Song {
+  constructor({ id, name, mid, singer, album, image, interval }) {
     this.id = id
     this.name = name
     this.mid = mid
@@ -31,9 +17,7 @@ class Song {
       return Promise.resolve(this.lyric)
     }
     return new Promise((resolve, reject) => {
-      getLyric(this.mid).then(({
-        data
-      }) => {
+      getLyric(this.mid).then(({ data }) => {
         if (data.retcode === ERR_OK) {
           this.lyric = Base64.decode(data.lyric)
           resolve(this.lyric)
@@ -93,7 +77,7 @@ function filterSinger(singer) {
   if (!singer) {
     return ''
   }
-  singer.forEach((s) => {
+  singer.forEach(s => {
     ret.push(s.name)
   })
   return ret.join('/')

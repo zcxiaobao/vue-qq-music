@@ -1,4 +1,4 @@
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { playMode } from './config'
 import { shuffle } from './util'
 export const playlistMixin = {
@@ -59,42 +59,25 @@ export const playerMixin = {
   }
 }
 
-// import {
-//   mapGetters,
-//   mapMutations,
-//   mapActions
-// } from 'vuex'
-// import {
-//   playMode
-// } from 'common/js/config'
-// import {
-//   shuffle
-// } from 'common/js/util'
-
-// export const playlistMixin = {
-//   computed: {
-//     ...mapGetters([
-//       'playlist'
-//     ])
-//   },
-//   mounted() {
-//     this.handlePlaylist(this.playlist)
-//   },
-//   activated() {
-//     this.handlePlaylist(this.playlist)
-//   },
-//   watch: {
-//     playlist(newVal) {
-//       this.handlePlaylist(newVal)
-//     }
-//   },
-//   methods: {
-//     handlePlaylist() {
-//       throw new Error('component must implement handlePlaylist method')
-//     }
-//   }
-// }
-
+export const serachMixin = {
+  data() {
+    return {
+      query: ''
+    }
+  },
+  computed: {
+    ...mapGetters(['searchHistoryList'])
+  },
+  methods: {
+    ...mapActions(['saveSearchHistory', 'delSearchHistory']),
+    queryChange(newQ) {
+      this.query = newQ
+    },
+    addQuery(query) {
+      this.$refs.searchBox.setQuery(query)
+    }
+  }
+}
 // export const playerMixin = {
 //   computed: {
 //     iconMode() {

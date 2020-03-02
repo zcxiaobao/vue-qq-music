@@ -15,3 +15,4 @@ export const currentSong = state => {
 export const album = state => state.album
 export const top = state => state.top
 export const searchHistoryList = state => state.searchHistoryList
+export const laterPlayList = state => state.laterPlayList
