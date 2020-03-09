@@ -113,7 +113,6 @@ export default {
       }
     },
     _checkMore(data) {
-      console.log(data.song)
       const song = data.song
       if (
         !song.list.length ||

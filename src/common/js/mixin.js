@@ -25,7 +25,13 @@ export const playlistMixin = {
 
 export const playerMixin = {
   computed: {
-    ...mapGetters(['mode', 'sequenceList', 'playlist', 'currentSong']),
+    ...mapGetters([
+      'mode',
+      'sequenceList',
+      'playlist',
+      'currentSong',
+      'favouriteList'
+    ]),
     iconMode() {
       return this.mode === playMode.sequence
         ? 'icon-sequence'
@@ -41,6 +47,7 @@ export const playerMixin = {
       setPlayMode: 'SET_PLAY_MODE',
       setPlayList: 'SET_PLAYLIST'
     }),
+    ...mapActions(['saveFavouriteList', 'delFavouriteList']),
     changeMode() {
       const mode = (this.mode + 1) % 3
       this.setPlayMode(mode)
@@ -55,6 +62,20 @@ export const playerMixin = {
       })
       this.setCurrentIndex(nowSongIndex)
       this.setPlayList(songList)
+    },
+    getFavoriteIcon(song) {
+      return this.isFavorite(song) ? 'icon-favorite' : 'icon-not-favorite'
+    },
+    toggleFavourite(song) {
+      if (this.isFavorite(song)) {
+        this.delFavouriteList(song)
+      } else {
+        this.saveFavouriteList(song)
+      }
+    },
+    isFavorite(song) {
+      const index = this.favouriteList.findIndex(s => s.id === song.id)
+      return index > -1
     }
   }
 }
@@ -75,6 +96,9 @@ export const serachMixin = {
     },
     addQuery(query) {
       this.$refs.searchBox.setQuery(query)
+    },
+    saveSearch() {
+      this.saveSearchHistory(this.query)
     }
   }
 }

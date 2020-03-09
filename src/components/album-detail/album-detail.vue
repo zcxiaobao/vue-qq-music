@@ -48,7 +48,6 @@ export default {
       const songs = []
 
       list.forEach(song => {
-        console.log(song)
         songs.push(createSong(song))
       })
       return songs

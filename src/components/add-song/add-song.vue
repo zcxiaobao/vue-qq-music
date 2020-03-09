@@ -40,14 +40,14 @@
         </div>
       </div>
       <div class="search-result" v-show="query">
-        <suggest :query="query" @select="saveSearchHistory"></suggest>
+        <suggest :query="query" @select="saveSuggest"></suggest>
       </div>
-      <!-- <top-tip ref="topTip">
+      <top-tip ref="topTip">
         <div class="tip-title">
           <i class="icon-ok"></i>
           <span class="text">1首歌曲已经添加到播放列表</span>
         </div>
-      </top-tip>-->
+      </top-tip>
     </div>
   </transition>
 </template>
@@ -58,6 +58,7 @@ import Suggest from '@/components/suggest/suggest.vue'
 import Switches from '@/base/switches/switches.vue'
 import SongList from '@/base/song-list/song-list'
 import Scroll from '@/base/scroll/scroll.vue'
+import TopTip from '@/base/top-tip/top-tip.vue'
 import SearchList from '@/base/search-list/search-list.vue'
 import { serachMixin } from '@/common/js/mixin.js'
 import { mapGetters, mapActions } from 'vuex'
@@ -86,9 +87,14 @@ export default {
     hide() {
       this.showFlag = false
     },
+    saveSuggest() {
+      this.saveSearch()
+      this.$refs.topTip.show()
+    },
     selectSong(song, index) {
       if (index !== 0) {
         this.insertSong(new Song(song))
+        this.$refs.topTip.show()
       }
     },
     switchIndex(index) {
@@ -101,7 +107,8 @@ export default {
     Switches,
     SongList,
     Scroll,
-    SearchList
+    SearchList,
+    TopTip
   }
 }
 </script>

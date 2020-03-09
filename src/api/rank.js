@@ -1,10 +1,23 @@
-import {
-  configParam,
-  options,
-  qqMusicConfigParam
-} from './config.js'
+import { configParam, options, qqMusicConfigParam } from './config.js'
 
 import axios from 'axios'
+
+const http = axios.create({
+  baseURL: 'http://47.240.82.152:8000/',
+  // baseURL: 'http://localhost:8000/',
+  timeout: 3000
+})
+export const getTopList = function() {
+  return http.get('/ranks/getTopList').then(res => {
+    return Promise.resolve(res)
+  })
+}
+export const getTopListSongs = function(topId) {
+  return http.get(`getTopListSongs/${topId}`).then(res => {
+    return Promise.resolve(res)
+  })
+}
+/*
 export const getTopList = function () {
   const topListUrl = '/getTopList'
   const data = {
@@ -60,3 +73,4 @@ export const getTopListSongs = function (topId) {
       return Promise.resolve(res)
     })
 }
+*/

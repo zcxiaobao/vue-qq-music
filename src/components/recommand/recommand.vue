@@ -100,7 +100,6 @@ export default {
       this.$refs.scroll.refresh()
     },
     selectAlbum(item) {
-      console.log(item)
       this.$router.push({
         path: `/recommand/${item.content_id}`
       })

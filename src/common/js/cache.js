@@ -5,6 +5,9 @@ const SEARCH_MAX_LEN = 15
 const LATER_PLAYLIST_KEY = '__laterPlaylist__'
 const LATER_MAX_LEN = 200
 
+const FAVORITE_KEY = '__favourite__'
+const FAVORITE_MAX_LEN = 200
+
 function insertArray(arr, val, compare, maxLen) {
   const index = arr.findIndex(compare)
   if (index === 0) {
@@ -82,6 +85,33 @@ export const delLaterPlay = song => {
   })
   storage.set(LATER_PLAYLIST_KEY, laterPlayList)
   return laterPlayList
+}
+
+export const loadFavouriteList = () => {
+  return storage.get(FAVORITE_KEY, [])
+}
+
+export const saveFavourite = function(song) {
+  let favouriteList = storage.get(FAVORITE_KEY, [])
+  insertArray(
+    favouriteList,
+    song,
+    s => {
+      return s.id === song.id
+    },
+    FAVORITE_MAX_LEN
+  )
+  storage.set(FAVORITE_KEY, favouriteList)
+  return favouriteList
+}
+
+export const delFavourite = song => {
+  let favouriteList = storage.get(FAVORITE_KEY, [])
+  delArrayItem(favouriteList, s => {
+    return s.id === song.id
+  })
+  storage.set(FAVORITE_KEY, favouriteList)
+  return favouriteList
 }
 // import storage from 'good-storage'
 

@@ -1,7 +1,7 @@
 const before = require('./qqmusic-data-conf.js')
 
 module.exports = {
-  publicPath: process.env.NODE_ENV === 'production' ? '/musicapp' : '/',
+  publicPath: './',
   devServer: {
     before
   }

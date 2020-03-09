@@ -6,7 +6,9 @@ import {
   delSearch,
   clearSearch,
   saveLaterPlay,
-  delLaterPlay
+  delLaterPlay,
+  saveFavourite,
+  delFavourite
 } from '@/common/js/cache.js'
 
 function findSongIndex(list, song) {
@@ -80,7 +82,6 @@ export const deleteSong = function({ commit, state }, song) {
   playlist.splice(fpIndex, 1)
   const fsIndex = sequenceList.findIndex(s => s.id === song.id)
   sequenceList.splice(fsIndex, 1)
-  console.log('fsIndex' + fsIndex)
   if (fpIndex < currentIndex || currentIndex === playlist.length) {
     currentIndex--
   }
@@ -112,4 +113,11 @@ export const saveLaterPlayList = function({ commit }, query) {
 }
 export const delLaterPlayList = function({ commit }, query) {
   commit(types.SET_LATER_PLAY_LIST, delLaterPlay(query))
+}
+
+export const saveFavouriteList = function({ commit }, query) {
+  commit(types.SET_FAVOURITE_LIST, saveFavourite(query))
+}
+export const delFavouriteList = function({ commit }, query) {
+  commit(types.SET_FAVOURITE_LIST, delFavourite(query))
 }

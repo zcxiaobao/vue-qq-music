@@ -74,7 +74,11 @@
               <i class="icon-next" @click="next"></i>
             </div>
             <div class="icon i-right">
-              <i class="icon icon-not-favorite"></i>
+              <i
+                class="icon"
+                :class="getFavoriteIcon(currentSong)"
+                @click.stop="toggleFavourite(currentSong)"
+              ></i>
             </div>
           </div>
         </div>
@@ -305,7 +309,6 @@ export default {
     },
     play() {
       this.songReady = true
-      console.log(111)
       this.saveLaterPlayList(this.currentSong)
     },
     audioEnd() {

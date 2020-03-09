@@ -31,7 +31,7 @@
       </scroll>
     </div>
     <div class="search-result" ref="searchResult" v-show="query">
-      <suggest ref="suggest" :query="query" @select="saveSearchHistory"></suggest>
+      <suggest ref="suggest" :query="query" @select="saveSuggest"></suggest>
     </div>
     <confirm ref="confirm" @confirm="clearSearchHistory" text="是否清空所有搜索历史" confirmBtnText="清空"></confirm>
     <router-view></router-view>
@@ -71,6 +71,9 @@ export default {
       // 'delSearchHistory',
       'clearSearchHistory'
     ]),
+    saveSuggest() {
+      this.saveSearch()
+    },
     handlePlaylist(playlist) {
       const bottom = playlist.length > 0 ? '60px' : 0
       this.$refs.shortcutWrapper.style.bottom = bottom

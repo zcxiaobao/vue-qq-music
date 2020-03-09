@@ -9,7 +9,6 @@ const mutations = {
   },
   [types.SET_FULL_SCREEN](state, flag) {
     state.fullScreen = flag
-    console.log(state.fullScreen)
   },
   [types.SET_PLAYLIST](state, list) {
     state.playlist = list
@@ -37,6 +36,9 @@ const mutations = {
   },
   [types.SET_LATER_PLAY_LIST](state, laterPlayList) {
     state.laterPlayList = laterPlayList
+  },
+  [types.SET_FAVOURITE_LIST](state, favouriteList) {
+    state.favouriteList = favouriteList
   }
 }
 
