@@ -4,7 +4,6 @@
       <slot></slot>
     </div>
     <div class="dots">
-      <!-- <span class="dot" v-for="(item, index) in dots" :key="index"></span> -->
       <span
         class="dot"
         :class="{active: currentPageIndex === index }"
@@ -42,7 +41,7 @@ export default {
     }
   },
   methods: {
-    _setSliderWidth() {
+    _setSliderWidth(isResize) {
       this.sliderItems = this.$refs.sliderGroup.children
       let width = 0
       const sliderWidth = this.$refs.slider.clientWidth
@@ -52,7 +51,7 @@ export default {
         slideItem.style.width = sliderWidth + 'px'
         width += sliderWidth
       }
-      if (this.loop) {
+      if (this.loop && !isResize) {
         width += sliderWidth * 2
       }
       this.$refs.sliderGroup.style.width = width + 'px'
@@ -73,9 +72,6 @@ export default {
       })
       this.slider.on('scrollEnd', () => {
         let pageIndex = this.slider.getCurrentPage().pageX
-        // if (this.loop) {
-        //   pageIndex -= 1
-        // }
         this.currentPageIndex = pageIndex
         if (this.autoPlay) {
           this._play()
@@ -89,9 +85,6 @@ export default {
     },
     _play() {
       let pageIndex = this.currentPageIndex + 1
-      // if (this.loop) {
-      //   pageIndex += 1
-      // }
       this.timer = setTimeout(() => {
         this.slider.next(400)
       }, this.interval)
@@ -106,6 +99,24 @@ export default {
         this._play()
       }
     }, 20)
+    window.addEventListener('resize', () => {
+      if (!this.slider) {
+        return
+      }
+      this._setSliderWidth(true)
+      this.slider.refresh()
+    })
+  },
+  activated() {
+    if (this.autoPlay) {
+      this._play()
+    }
+  },
+  deactivated() {
+    clearTimeout(this.timer)
+  },
+  beforeDestroy() {
+    clearTimeout(this.timer)
   }
 }
 </script>

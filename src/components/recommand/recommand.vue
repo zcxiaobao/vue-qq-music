@@ -29,6 +29,7 @@
             >
               <div class="icon">
                 <img v-lazy="item.cover" />
+                <div class="listen-num">{{_normallizeListenNum(item.listen_num)}}</div>
               </div>
               <div class="text" v-html="item.title"></div>
             </li>
@@ -38,9 +39,12 @@
           <h1 class="list-title">最新音乐</h1>
           <ul>
             <li v-for="item in newSongList" class="item" :key="item.id">
-              <div class="icon">
+              <a class="icon">
                 <img width="60" height="60" v-lazy="item.image" />
-              </div>
+                <div class="maker">
+                  <div class="icon-play play-maker"></div>
+                </div>
+              </a>
               <div class="text">
                 <h2 class="name" v-html="item.name"></h2>
                 <p class="desc" v-html="item.singer"></p>
@@ -154,6 +158,9 @@ export default {
       const mins = `${Math.floor(seconds / 60)}`
       const secs = `${seconds % 60}`
       return `${mins.padStart(2, '0')}:${secs.padStart(2, '0')}`
+    },
+    _normallizeListenNum(num) {
+      return `${(num / 10000).toFixed(1)}万`
     }
   },
   computed: {
@@ -224,8 +231,16 @@ export default {
           .icon {
             flex: 0 0 80px;
             width: 100%;
+            position: relative;
             img {
               width: 100%;
+            }
+            .listen-num {
+              font-size: @font-size-small-s;
+              color: @color-text;
+              position: absolute;
+              top: 4px;
+              right: 2px;
             }
           }
           .text {
@@ -245,10 +260,33 @@ export default {
         box-sizing: border-box;
         align-items: center;
         padding: 0 20px 20px 20px;
+
         .icon {
           flex: 0 0 60px;
           width: 60px;
           padding-right: 20px;
+          position: relative;
+          // .maker {
+          //   position: absolute;
+          //   width: 60px;
+          //   top: 0;
+          //   height: 60px;
+          //   margin: auto;
+
+          //   .play-maker {
+          //     opacity: 0;
+          //     transition: all 0.5s;
+          //     position: absolute;
+          //     margin: auto;
+          //     top: 0;
+          //     bottom: 0;
+          //     left: 0;
+          //     right: 0;
+          //     width: 20px;
+          //     font-size: 20px;
+          //     height: 20px;
+          //   }
+          // }
         }
         .text {
           display: flex;
