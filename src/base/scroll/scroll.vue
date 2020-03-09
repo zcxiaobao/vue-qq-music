@@ -28,9 +28,17 @@ export default {
       type: Boolean,
       default: false
     },
+    listenBeforeScroll: {
+      type: Boolean,
+      default: false
+    },
     pullUpLoad: {
       type: Object,
       default: null
+    },
+    refreshDelay: {
+      type: Number,
+      default: 20
     }
   },
   methods: {
@@ -53,6 +61,11 @@ export default {
           this.$emit('pullingUp')
         })
       }
+      if (this.listenBeforeScroll) {
+        this.scroll.on('beforeScrollStart', () => {
+          this.$emit('beforeScroll')
+        })
+      }
     },
     enable() {
       this.scroll && this.scroll.enable()
@@ -73,9 +86,7 @@ export default {
       this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments)
     },
     finishPullUp() {
-      if (this.listenPullingUp) {
-        this.scroll && this.scroll.finishPullUp()
-      }
+      this.scroll && this.scroll.finishPullUp()
     }
   },
   mounted() {
@@ -86,11 +97,12 @@ export default {
   watch: {
     data() {
       setTimeout(() => {
-        // this.destroy()
-        this.finishPullUp()
+        if (this.listenPullingUp) {
+          this.finishPullUp()
+        }
 
         this.refresh()
-      }, 20)
+      }, this.refreshDelay)
     }
   }
 }
