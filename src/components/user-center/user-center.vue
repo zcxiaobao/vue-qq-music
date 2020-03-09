@@ -7,7 +7,7 @@
       <div class="switches-wrapper">
         <switches :currentIndex="currentIndex" :switches="switches" @switch="currentIndexChange"></switches>
       </div>
-      <div ref="playBtn" class="play-btn">
+      <div ref="playBtn" class="play-btn" @click.stop="randomPlaySong">
         <i class="icon-play"></i>
         <span class="text">随机播放全部</span>
       </div>
@@ -39,7 +39,7 @@
 import Switches from '@/base/switches/switches.vue'
 import Scroll from '@/base/scroll/scroll.vue'
 import SongList from '@/base/song-list/song-list.vue'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 export default {
   data() {
     return {
@@ -51,6 +51,14 @@ export default {
     ...mapGetters(['favouriteList', 'laterPlayList'])
   },
   methods: {
+    ...mapActions(['randomPlay']),
+    randomPlaySong() {
+      if (this.currentIndex === 0) {
+        this.randomPlay(this.favouriteList)
+      } else if (this.currentIndex === 1) {
+        this.randomPlay(this.laterPlayList)
+      }
+    },
     back() {
       this.$router.back()
     },
