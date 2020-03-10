@@ -84,7 +84,6 @@ export default {
       })
     },
     _play() {
-      let pageIndex = this.currentPageIndex + 1
       this.timer = setTimeout(() => {
         this.slider.next(400)
       }, this.interval)
